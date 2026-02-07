@@ -6,6 +6,9 @@ import { Search, ArrowLeft } from 'lucide-react';
 import { mockProducts } from '../data/mockProducts';
 import { ProductCard } from './ProductCard';
 import { AddProductCard } from './AddProductCard';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 export function ProductMenu() {
   const router = useRouter();
@@ -45,25 +48,27 @@ export function ProductMenu() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f5f1ed' }}>
+    <div className="min-h-screen bg-[#f5f1ed]">
       {/* Header */}
       <div className="bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center gap-4 mb-6">
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={onBack}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="hover:bg-gray-100"
             >
-              <ArrowLeft className="w-6 h-6" style={{ color: '#3d2817' }} />
-            </button>
+              <ArrowLeft className="w-6 h-6 text-[#3d2817]" />
+            </Button>
             <div>
               <h1 
-                className="text-3xl"
-                style={{ color: '#3d2817', fontFamily: 'var(--font-brand)' }}
+                className="text-3xl text-[#3d2817]"
+                style={{ fontFamily: 'var(--font-brand)' }}
               >
                 Menú de Productos
               </h1>
-              <p className="text-sm" style={{ color: '#8b7355' }}>
+              <p className="text-sm text-[#8b7355]">
                 Gestiona tu catálogo de productos
               </p>
             </div>
@@ -72,49 +77,44 @@ export function ProductMenu() {
           {/* Buscador */}
           <div className="relative">
             <Search 
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5" 
-              style={{ color: '#8b7355' }}
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#8b7355]" 
             />
-            <input
+            <Input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar productos..."
-              className="w-full pl-12 pr-4 py-3 rounded-lg border-2 focus:outline-none transition-colors"
-              style={{ 
-                borderColor: '#c5a880',
-                backgroundColor: '#f5f1ed'
-              }}
+              className="pl-12 py-6 text-lg border-[#c5a880] bg-[#f5f1ed] focus-visible:ring-[#a0826d]"
             />
           </div>
         </div>
       </div>
 
       {/* Tabs de categorías */}
-      <div className="bg-white border-b" style={{ borderColor: '#e8dfd3' }}>
+      <div className="bg-white border-b border-[#e8dfd3]">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex gap-2 overflow-x-auto py-4">
-            {categories.map(category => (
-              <button
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className="px-6 py-2 rounded-full text-sm whitespace-nowrap transition-all"
-                style={{
-                  backgroundColor: activeCategory === category ? '#3d2817' : '#f5f1ed',
-                  color: activeCategory === category ? '#ffffff' : '#3d2817'
-                }}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
+            <ScrollArea className="w-full whitespace-nowrap">
+                <div className="flex w-max space-x-2 py-4">
+                    {categories.map(category => (
+                    <Button
+                        key={category}
+                        variant={activeCategory === category ? "default" : "secondary"}
+                        onClick={() => setActiveCategory(category)}
+                        className={`rounded-full ${activeCategory === category ? "bg-[#3d2817] text-white hover:bg-[#3d2817]/90" : "bg-[#f5f1ed] text-[#3d2817] hover:bg-[#e8dfd3]"}`}
+                    >
+                        {category}
+                    </Button>
+                    ))}
+                </div>
+                <ScrollBar orientation="horizontal" />
+            </ScrollArea>
         </div>
       </div>
 
       {/* Grid de productos */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-4">
-          <p className="text-sm" style={{ color: '#8b7355' }}>
+          <p className="text-sm text-[#8b7355]">
             {filteredProducts.length} producto{filteredProducts.length !== 1 ? 's' : ''} encontrado{filteredProducts.length !== 1 ? 's' : ''}
           </p>
         </div>
@@ -136,7 +136,7 @@ export function ProductMenu() {
 
         {filteredProducts.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-lg" style={{ color: '#8b7355' }}>
+            <p className="text-lg text-[#8b7355]">
               No se encontraron productos
             </p>
           </div>

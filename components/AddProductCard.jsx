@@ -1,5 +1,14 @@
 import { useState } from 'react';
 import { Plus, X } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card, CardContent } from "@/components/ui/card";
 
 export function AddProductCard({ onAdd }) {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -142,402 +151,318 @@ export function AddProductCard({ onAdd }) {
     });
   };
 
-  if (!isFormOpen) {
-    return (
+  return (
+    <>
       <div 
         onClick={() => setIsFormOpen(true)}
-        className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer flex items-center justify-center min-h-[400px]"
-        style={{ borderLeft: '4px solid #a0826d', borderStyle: 'dashed' }}
+        className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all cursor-pointer flex items-center justify-center min-h-[400px] border-l-4 border-l-[#a0826d] border-dashed"
       >
         <div className="text-center p-8">
           <div 
-            className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center"
-            style={{ backgroundColor: '#f5f1ed' }}
+            className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center bg-[#f5f1ed]"
           >
-            <Plus className="w-8 h-8" style={{ color: '#a0826d' }} />
+            <Plus className="w-8 h-8 text-[#a0826d]" />
           </div>
-          <h3 className="text-lg mb-2" style={{ color: '#3d2817' }}>
+          <h3 className="text-lg mb-2 text-[#3d2817]">
             Añadir Producto
           </h3>
-          <p className="text-sm" style={{ color: '#8b7355' }}>
+          <p className="text-sm text-[#8b7355]">
             Crear un nuevo producto
           </p>
         </div>
       </div>
-    );
-  }
 
-  return (
-    <div 
-      className="bg-white rounded-xl shadow-md overflow-hidden"
-      style={{ borderLeft: '4px solid #a0826d' }}
-    >
-      <div className="p-5">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg" style={{ color: '#3d2817' }}>
-            Nuevo Producto
-          </h3>
-          <button
-            onClick={resetForm}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-          >
-            <X className="w-5 h-5" style={{ color: '#8b7355' }} />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Información básica */}
-          <div>
-            <label className="block text-sm mb-1" style={{ color: '#3d2817' }}>
-              Nombre *
-            </label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-3 py-2 rounded-lg border"
-              style={{ borderColor: '#c5a880', backgroundColor: '#ffffff' }}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm mb-1" style={{ color: '#3d2817' }}>
-              Categoría *
-            </label>
-            <select
-              value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              className="w-full px-3 py-2 rounded-lg border"
-              style={{ borderColor: '#c5a880', backgroundColor: '#ffffff' }}
-              required
-            >
-              <option value="Café">Café</option>
-              <option value="Té">Té</option>
-              <option value="Bebida Fría">Bebida Fría</option>
-              <option value="Comida">Comida</option>
-              <option value="Postre">Postre</option>
-              <option value="Otro">Otro</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm mb-1" style={{ color: '#3d2817' }}>
-              Descripción *
-            </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-3 py-2 rounded-lg border resize-none"
-              style={{ borderColor: '#c5a880', backgroundColor: '#ffffff' }}
-              rows={2}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm mb-1" style={{ color: '#3d2817' }}>
-              Precio Base
-            </label>
-            <input
-              type="number"
-              step="0.01"
-              value={formData.price || ''}
-              onChange={(e) => setFormData({ ...formData, price: e.target.value ? parseFloat(e.target.value) : undefined })}
-              className="w-full px-3 py-2 rounded-lg border"
-              style={{ borderColor: '#c5a880', backgroundColor: '#ffffff' }}
-              placeholder="Dejar vacío si tiene tamaños"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm mb-1" style={{ color: '#3d2817' }}>
-              URL de Imagen
-            </label>
-            <input
-              type="text"
-              value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-              className="w-full px-3 py-2 rounded-lg border"
-              style={{ borderColor: '#c5a880', backgroundColor: '#ffffff' }}
-              placeholder="https://..."
-            />
-          </div>
-
-          {/* Tamaños */}
-          <div>
-            <label className="block text-sm mb-2" style={{ color: '#3d2817' }}>
-              Tamaños
-            </label>
-            <div className="flex gap-2 mb-2">
-              <input
-                type="text"
-                value={sizeLabel}
-                onChange={(e) => setSizeLabel(e.target.value)}
-                className="flex-1 px-3 py-2 rounded-lg border text-sm"
-                style={{ borderColor: '#c5a880', backgroundColor: '#ffffff' }}
-                placeholder="Ej: CH, G"
-              />
-              <input
-                type="number"
-                step="0.01"
-                value={sizePrice}
-                onChange={(e) => setSizePrice(e.target.value)}
-                className="w-24 px-3 py-2 rounded-lg border text-sm"
-                style={{ borderColor: '#c5a880', backgroundColor: '#ffffff' }}
-                placeholder="Precio"
-              />
-              <button
-                type="button"
-                onClick={addSize}
-                className="px-4 py-2 rounded-lg text-sm"
-                style={{ backgroundColor: '#c5a880', color: '#ffffff' }}
-              >
-                +
-              </button>
-            </div>
-            {formData.sizes && formData.sizes.length > 0 && (
-              <div className="space-y-1">
-                {formData.sizes.map((size, idx) => (
-                  <div
-                    key={idx}
-                    className="flex justify-between items-center px-3 py-2 rounded text-sm"
-                    style={{ backgroundColor: '#f5f1ed' }}
-                  >
-                    <span>{size.label}: ${size.price}</span>
-                    <button
-                      type="button"
-                      onClick={() => removeSize(idx)}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Extras */}
-          <div>
-            <label className="block text-sm mb-2" style={{ color: '#3d2817' }}>
-              Extras
-            </label>
-            <div className="flex gap-2 mb-2">
-              <input
-                type="text"
-                value={extraName}
-                onChange={(e) => setExtraName(e.target.value)}
-                className="flex-1 px-3 py-2 rounded-lg border text-sm"
-                style={{ borderColor: '#c5a880', backgroundColor: '#ffffff' }}
-                placeholder="Nombre del extra"
-              />
-              <input
-                type="number"
-                step="0.01"
-                value={extraPrice}
-                onChange={(e) => setExtraPrice(e.target.value)}
-                className="w-24 px-3 py-2 rounded-lg border text-sm"
-                style={{ borderColor: '#c5a880', backgroundColor: '#ffffff' }}
-                placeholder="Precio"
-              />
-              <button
-                type="button"
-                onClick={addExtra}
-                className="px-4 py-2 rounded-lg text-sm"
-                style={{ backgroundColor: '#c5a880', color: '#ffffff' }}
-              >
-                +
-              </button>
-            </div>
-            {formData.extras && formData.extras.length > 0 && (
-              <div className="space-y-1">
-                {formData.extras.map((extra, idx) => (
-                  <div
-                    key={idx}
-                    className="flex justify-between items-center px-3 py-2 rounded text-sm"
-                    style={{ backgroundColor: '#f5f1ed' }}
-                  >
-                    <span>{extra.name}: +${extra.price}</span>
-                    <button
-                      type="button"
-                      onClick={() => removeExtra(idx)}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Sabores */}
-          <div>
-            <label className="block text-sm mb-2" style={{ color: '#3d2817' }}>
-              Sabores
-            </label>
-            <div className="flex gap-2 mb-2">
-              <input
-                type="text"
-                value={flavorName}
-                onChange={(e) => setFlavorName(e.target.value)}
-                className="flex-1 px-3 py-2 rounded-lg border text-sm"
-                style={{ borderColor: '#c5a880', backgroundColor: '#ffffff' }}
-                placeholder="Nombre del sabor"
-              />
-              <button
-                type="button"
-                onClick={addFlavor}
-                className="px-4 py-2 rounded-lg text-sm"
-                style={{ backgroundColor: '#c5a880', color: '#ffffff' }}
-              >
-                +
-              </button>
-            </div>
-            {formData.flavors && formData.flavors.length > 0 && (
-              <div className="flex gap-1 flex-wrap mb-2">
-                {formData.flavors.map((flavor, idx) => (
-                  <span
-                    key={idx}
-                    className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs"
-                    style={{ backgroundColor: '#f5f1ed' }}
-                  >
-                    {flavor}
-                    <button
-                      type="button"
-                      onClick={() => removeFlavor(idx)}
-                      className="text-red-600 hover:text-red-800"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-            {formData.flavors && formData.flavors.length > 0 && (
-              <div>
-                <label className="block text-xs mb-1" style={{ color: '#8b7355' }}>
-                  Precio por sabor extra
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={formData.extraFlavorPrice || ''}
-                  onChange={(e) => setFormData({ ...formData, extraFlavorPrice: e.target.value ? parseFloat(e.target.value) : undefined })}
-                  className="w-full px-3 py-2 rounded-lg border text-sm"
-                  style={{ borderColor: '#c5a880', backgroundColor: '#ffffff' }}
-                  placeholder="Ej: 10"
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Opciones (para Alitas, etc.) */}
-          <div>
-            <label className="block text-sm mb-2" style={{ color: '#3d2817' }}>
-              Opciones Especiales
-            </label>
-            
-            <div className="mb-2">
-              <label className="block text-xs mb-1" style={{ color: '#8b7355' }}>
-                Número de piezas
-              </label>
-              <input
-                type="number"
-                value={formData.options?.pieces || ''}
-                onChange={(e) => setFormData({ 
-                  ...formData, 
-                  options: { 
-                    ...formData.options, 
-                    pieces: e.target.value ? parseInt(e.target.value) : undefined 
-                  } 
-                })}
-                className="w-full px-3 py-2 rounded-lg border text-sm"
-                style={{ borderColor: '#c5a880', backgroundColor: '#ffffff' }}
-                placeholder="Ej: 6"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs mb-1" style={{ color: '#8b7355' }}>
-                Salsas disponibles
-              </label>
-              <div className="flex gap-2 mb-2">
-                <input
-                  type="text"
-                  value={sauceName}
-                  onChange={(e) => setSauceName(e.target.value)}
-                  className="flex-1 px-3 py-2 rounded-lg border text-sm"
-                  style={{ borderColor: '#c5a880', backgroundColor: '#ffffff' }}
-                  placeholder="Nombre de la salsa"
-                />
-                <button
-                  type="button"
-                  onClick={addSauce}
-                  className="px-4 py-2 rounded-lg text-sm"
-                  style={{ backgroundColor: '#c5a880', color: '#ffffff' }}
-                >
-                  +
-                </button>
-              </div>
-              {formData.options?.sauces && formData.options.sauces.length > 0 && (
-                <div className="flex gap-1 flex-wrap">
-                  {formData.options.sauces.map((sauce, idx) => (
-                    <span
-                      key={idx}
-                      className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs"
-                      style={{ backgroundColor: '#f5f1ed' }}
-                    >
-                      {sauce}
-                      <button
-                        type="button"
-                        onClick={() => removeSauce(idx)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </span>
-                  ))}
+      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0 gap-0">
+          <DialogHeader className="p-6 pb-2">
+            <DialogTitle className="text-[#3d2817]">Nuevo Producto</DialogTitle>
+            <DialogDescription>
+              Completa los detalles para añadir un nuevo producto al menú.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <ScrollArea className="flex-1 p-6 pt-2">
+            <form id="add-product-form" onSubmit={handleSubmit} className="space-y-6">
+              {/* Información básica */}
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="name" className="text-[#3d2817]">Nombre *</Label>
+                        <Input
+                        id="name"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        required
+                        className="border-[#c5a880]"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="category" className="text-[#3d2817]">Categoría *</Label>
+                        <Select
+                            value={formData.category}
+                            onValueChange={(value) => setFormData({ ...formData, category: value })}
+                        >
+                            <SelectTrigger className="border-[#c5a880]">
+                                <SelectValue placeholder="Selecciona una categoría" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Café">Café</SelectItem>
+                                <SelectItem value="Té">Té</SelectItem>
+                                <SelectItem value="Bebida Fría">Bebida Fría</SelectItem>
+                                <SelectItem value="Comida">Comida</SelectItem>
+                                <SelectItem value="Postre">Postre</SelectItem>
+                                <SelectItem value="Otro">Otro</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
                 </div>
-              )}
-            </div>
-          </div>
 
-          {/* Disponibilidad */}
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="available"
-              checked={formData.available}
-              onChange={(e) => setFormData({ ...formData, available: e.target.checked })}
-              className="w-4 h-4"
-            />
-            <label htmlFor="available" className="text-sm" style={{ color: '#3d2817' }}>
-              Producto disponible
-            </label>
-          </div>
+                <div className="space-y-2">
+                    <Label htmlFor="description" className="text-[#3d2817]">Descripción *</Label>
+                    <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    required
+                    className="border-[#c5a880] resize-none"
+                    rows={2}
+                    />
+                </div>
 
-          {/* Botones */}
-          <div className="flex gap-2 pt-4">
-            <button
-              type="button"
-              onClick={resetForm}
-              className="flex-1 px-4 py-2 rounded-lg text-sm transition-colors"
-              style={{ backgroundColor: '#e8dfd3', color: '#3d2817' }}
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="flex-1 px-4 py-2 rounded-lg text-sm transition-colors hover:opacity-90"
-              style={{ backgroundColor: '#3d2817', color: '#ffffff' }}
-            >
-              Añadir Producto
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="price" className="text-[#3d2817]">Precio Base</Label>
+                        <Input
+                        id="price"
+                        type="number"
+                        step="0.01"
+                        value={formData.price || ''}
+                        onChange={(e) => setFormData({ ...formData, price: e.target.value ? parseFloat(e.target.value) : undefined })}
+                        placeholder="Dejar vacío si tiene tamaños"
+                        className="border-[#c5a880]"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                         <Label htmlFor="image" className="text-[#3d2817]">URL de Imagen</Label>
+                        <Input
+                        id="image"
+                        type="text"
+                        value={formData.image}
+                        onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                        placeholder="https://..."
+                        className="border-[#c5a880]"
+                        />
+                    </div>
+                </div>
+              </div>
+
+              {/* Tamaños */}
+              <div className="space-y-2">
+                <Label className="text-[#3d2817]">Tamaños</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={sizeLabel}
+                    onChange={(e) => setSizeLabel(e.target.value)}
+                    placeholder="Ej: CH, G"
+                    className="flex-1 border-[#c5a880]"
+                  />
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={sizePrice}
+                    onChange={(e) => setSizePrice(e.target.value)}
+                    placeholder="Precio"
+                    className="w-24 border-[#c5a880]"
+                  />
+                  <Button type="button" onClick={addSize} className="bg-[#c5a880] hover:bg-[#c5a880]/90 text-white">
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+                {formData.sizes && formData.sizes.length > 0 && (
+                  <div className="space-y-1">
+                    {formData.sizes.map((size, idx) => (
+                      <div key={idx} className="flex justify-between items-center px-3 py-2 rounded text-sm bg-[#f5f1ed]">
+                        <span>{size.label}: ${size.price}</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeSize(idx)}
+                          className="text-red-600 hover:text-red-800 h-auto p-1"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Extras */}
+              <div className="space-y-2">
+                <Label className="text-[#3d2817]">Extras</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={extraName}
+                    onChange={(e) => setExtraName(e.target.value)}
+                    placeholder="Nombre del extra"
+                    className="flex-1 border-[#c5a880]"
+                  />
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={extraPrice}
+                    onChange={(e) => setExtraPrice(e.target.value)}
+                    placeholder="Precio"
+                    className="w-24 border-[#c5a880]"
+                  />
+                  <Button type="button" onClick={addExtra} className="bg-[#c5a880] hover:bg-[#c5a880]/90 text-white">
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+                {formData.extras && formData.extras.length > 0 && (
+                  <div className="space-y-1">
+                    {formData.extras.map((extra, idx) => (
+                      <div key={idx} className="flex justify-between items-center px-3 py-2 rounded text-sm bg-[#f5f1ed]">
+                        <span>{extra.name}: +${extra.price}</span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeExtra(idx)}
+                          className="text-red-600 hover:text-red-800 h-auto p-1"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Sabores */}
+              <div className="space-y-2">
+                <Label className="text-[#3d2817]">Sabores</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={flavorName}
+                    onChange={(e) => setFlavorName(e.target.value)}
+                    placeholder="Nombre del sabor"
+                    className="flex-1 border-[#c5a880]"
+                  />
+                  <Button type="button" onClick={addFlavor} className="bg-[#c5a880] hover:bg-[#c5a880]/90 text-white">
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+                {formData.flavors && formData.flavors.length > 0 && (
+                    <div className="flex gap-1 flex-wrap mb-2">
+                        {formData.flavors.map((flavor, idx) => (
+                        <span key={idx} className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs bg-[#f5f1ed]">
+                            {flavor}
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeFlavor(idx)}
+                                className="text-red-600 hover:text-red-800 h-auto p-0 hover:bg-transparent"
+                            >
+                                <X className="w-3 h-3" />
+                            </Button>
+                        </span>
+                        ))}
+                    </div>
+                )}
+                 {formData.flavors && formData.flavors.length > 0 && (
+                    <div className="md:w-1/2">
+                         <Label className="text-xs text-[#8b7355] mb-1 block">Precio por sabor extra</Label>
+                         <Input
+                            type="number"
+                            step="0.01"
+                            value={formData.extraFlavorPrice || ''}
+                            onChange={(e) => setFormData({ ...formData, extraFlavorPrice: e.target.value ? parseFloat(e.target.value) : undefined })}
+                            placeholder="Ej: 10"
+                            className="border-[#c5a880]"
+                        />
+                    </div>
+                 )}
+              </div>
+
+              {/* Opciones (para Alitas, etc.) */}
+              <div className="space-y-2">
+                <Label className="text-[#3d2817]">Opciones Especiales</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div>
+                        <Label className="text-xs text-[#8b7355] mb-1 block">Número de piezas</Label>
+                        <Input
+                            type="number"
+                            value={formData.options?.pieces || ''}
+                            onChange={(e) => setFormData({ 
+                            ...formData, 
+                            options: { 
+                                ...formData.options, 
+                                pieces: e.target.value ? parseInt(e.target.value) : undefined 
+                            } 
+                            })}
+                            placeholder="Ej: 6"
+                            className="border-[#c5a880]"
+                        />
+                     </div>
+                     <div>
+                        <Label className="text-xs text-[#8b7355] mb-1 block">Salsas disponibles</Label>
+                        <div className="flex gap-2 mb-2">
+                            <Input
+                            value={sauceName}
+                            onChange={(e) => setSauceName(e.target.value)}
+                            placeholder="Nombre de la salsa"
+                            className="flex-1 border-[#c5a880]"
+                            />
+                            <Button type="button" onClick={addSauce} className="bg-[#c5a880] hover:bg-[#c5a880]/90 text-white">
+                                <Plus className="w-4 h-4" />
+                            </Button>
+                        </div>
+                        {formData.options?.sauces && formData.options.sauces.length > 0 && (
+                             <div className="flex gap-1 flex-wrap">
+                                {formData.options.sauces.map((sauce, idx) => (
+                                <span key={idx} className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs bg-[#f5f1ed]">
+                                    {sauce}
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => removeSauce(idx)}
+                                        className="text-red-600 hover:text-red-800 h-auto p-0 hover:bg-transparent"
+                                        >
+                                        <X className="w-3 h-3" />
+                                    </Button>
+                                </span>
+                                ))}
+                            </div>
+                        )}
+                     </div>
+                </div>
+              </div>
+
+              {/* Disponibilidad */}
+              <div className="flex items-center gap-2">
+                <Switch
+                    id="available"
+                    checked={formData.available}
+                    onCheckedChange={(checked) => setFormData({ ...formData, available: checked })}
+                />
+                <Label htmlFor="available" className="text-[#3d2817]">Producto disponible</Label>
+              </div>
+            </form>
+          </ScrollArea>
+           <DialogFooter className="p-6 pt-2">
+             <Button variant="outline" onClick={resetForm} className="border-[#e8dfd3] text-[#3d2817]">
+               Cancelar
+             </Button>
+             <Button type="submit" form="add-product-form" className="bg-[#3d2817] hover:bg-[#3d2817]/90 text-white">
+               Añadir Producto
+             </Button>
+           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

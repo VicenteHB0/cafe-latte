@@ -1,14 +1,14 @@
 import { Edit2, Trash2 } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export function ProductCard({ product, onEdit, onDelete }) {
   return (
-    <div 
-      className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all overflow-hidden"
-      style={{ borderLeft: '4px solid #a0826d' }}
-    >
+    <Card className="overflow-hidden border-l-4 border-l-[#a0826d] hover:shadow-xl transition-all">
       {/* Imagen */}
       <div 
-        className="h-48 bg-gradient-to-br flex items-center justify-center"
+        className="h-48 flex items-center justify-center"
         style={{ 
           background: 'linear-gradient(135deg, #f5f1ed 0%, #e8dfd3 100%)'
         }}
@@ -24,61 +24,46 @@ export function ProductCard({ product, onEdit, onDelete }) {
         )}
       </div>
 
-      {/* Contenido */}
-      <div className="p-5">
-        {/* Header con nombre y disponibilidad */}
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex-1">
-            <h3 
-              className="text-lg mb-1"
-              style={{ color: '#3d2817', fontFamily: 'var(--font-body)' }}
-            >
-              {product.name}
-            </h3>
-            <p className="text-xs mb-2" style={{ color: '#8b7355' }}>
-              {product.category}
-            </p>
-          </div>
-          <div
-            className="px-2 py-1 rounded text-xs"
-            style={{
-              backgroundColor: product.available ? '#d4edda' : '#f8d7da',
-              color: product.available ? '#155724' : '#721c24'
-            }}
-          >
-            {product.available ? 'Disponible' : 'No disponible'}
-          </div>
+      <CardHeader className="p-5 pb-2">
+        <div className="flex items-start justify-between">
+            <div>
+                <CardTitle className="text-lg font-bold text-[#3d2817]" style={{ fontFamily: 'var(--font-body)' }}>
+                    {product.name}
+                </CardTitle>
+                <CardDescription className="text-xs text-[#8b7355]">
+                    {product.category}
+                </CardDescription>
+            </div>
+            <Badge variant={product.available ? "default" : "destructive"} className={product.available ? "bg-[#d4edda] text-[#155724] hover:bg-[#d4edda]/80" : "bg-[#f8d7da] text-[#721c24] hover:bg-[#f8d7da]/80"}>
+                {product.available ? 'Disponible' : 'No disponible'}
+            </Badge>
         </div>
+      </CardHeader>
 
+      <CardContent className="p-5 pt-0 space-y-3">
         {/* Descripción */}
-        <p className="text-sm mb-4" style={{ color: '#8b7355' }}>
+        <p className="text-sm text-[#8b7355]">
           {product.description}
         </p>
 
-        {/* Precio base (si existe) */}
+        {/* Precio base */}
         {product.price && (
-          <div className="mb-3">
-            <span className="text-2xl" style={{ color: '#3d2817' }}>
+            <div className="text-2xl font-bold text-[#3d2817]">
               ${product.price}
-            </span>
-          </div>
+            </div>
         )}
 
         {/* Tamaños */}
         {product.sizes && product.sizes.length > 0 && (
-          <div className="mb-3">
-            <p className="text-xs mb-2" style={{ color: '#8b7355' }}>
-              <strong>Tamaños:</strong>
+          <div>
+            <p className="text-xs font-semibold mb-2 text-[#8b7355]">
+              Tamaños:
             </p>
             <div className="flex gap-2 flex-wrap">
               {product.sizes.map((size, idx) => (
-                <span
-                  key={idx}
-                  className="px-3 py-1 rounded-full text-xs"
-                  style={{ backgroundColor: '#f5f1ed', color: '#3d2817' }}
-                >
+                <Badge key={idx} variant="outline" className="text-xs bg-[#f5f1ed] text-[#3d2817] border-none">
                   {size.label}: ${size.price}
-                </span>
+                </Badge>
               ))}
             </div>
           </div>
@@ -86,19 +71,18 @@ export function ProductCard({ product, onEdit, onDelete }) {
 
         {/* Extras */}
         {product.extras && product.extras.length > 0 && (
-          <div className="mb-3">
-            <p className="text-xs mb-2" style={{ color: '#8b7355' }}>
-              <strong>Extras disponibles:</strong>
+          <div>
+            <p className="text-xs font-semibold mb-2 text-[#8b7355]">
+              Extras disponibles:
             </p>
             <div className="space-y-1">
               {product.extras.map((extra, idx) => (
                 <div
                   key={idx}
-                  className="flex justify-between text-xs px-2 py-1 rounded"
-                  style={{ backgroundColor: '#f5f1ed' }}
+                  className="flex justify-between text-xs px-2 py-1 rounded bg-[#f5f1ed]"
                 >
-                  <span style={{ color: '#3d2817' }}>{extra.name}</span>
-                  <span style={{ color: '#a0826d' }}>+${extra.price}</span>
+                  <span className="text-[#3d2817]">{extra.name}</span>
+                  <span className="text-[#a0826d]">+${extra.price}</span>
                 </div>
               ))}
             </div>
@@ -107,23 +91,19 @@ export function ProductCard({ product, onEdit, onDelete }) {
 
         {/* Sabores */}
         {product.flavors && product.flavors.length > 0 && (
-          <div className="mb-3">
-            <p className="text-xs mb-2" style={{ color: '#8b7355' }}>
-              <strong>Sabores:</strong>
+          <div>
+            <p className="text-xs font-semibold mb-2 text-[#8b7355]">
+              Sabores:
             </p>
             <div className="flex gap-1 flex-wrap">
               {product.flavors.map((flavor, idx) => (
-                <span
-                  key={idx}
-                  className="px-2 py-1 rounded text-xs"
-                  style={{ backgroundColor: '#f5f1ed', color: '#3d2817' }}
-                >
+                <Badge key={idx} variant="secondary" className="text-xs bg-[#f5f1ed] text-[#3d2817]">
                   {flavor}
-                </span>
+                </Badge>
               ))}
             </div>
             {product.extraFlavorPrice && (
-              <p className="text-xs mt-1" style={{ color: '#a0826d' }}>
+              <p className="text-xs mt-1 text-[#a0826d]">
                 Sabor extra: +${product.extraFlavorPrice}
               </p>
             )}
@@ -132,53 +112,49 @@ export function ProductCard({ product, onEdit, onDelete }) {
 
         {/* Opciones */}
         {product.options && (
-          <div className="mb-3">
-            <p className="text-xs mb-2" style={{ color: '#8b7355' }}>
-              <strong>Opciones:</strong>
+          <div>
+            <p className="text-xs font-semibold mb-2 text-[#8b7355]">
+              Opciones:
             </p>
             {product.options.pieces && (
-              <p className="text-xs mb-1" style={{ color: '#3d2817' }}>
+              <p className="text-xs mb-1 text-[#3d2817]">
                 Piezas: {product.options.pieces}
               </p>
             )}
             {product.options.sauces && product.options.sauces.length > 0 && (
               <div>
-                <p className="text-xs mb-1" style={{ color: '#8b7355' }}>Salsas:</p>
+                <p className="text-xs mb-1 text-[#8b7355]">Salsas:</p>
                 <div className="flex gap-1 flex-wrap">
                   {product.options.sauces.map((sauce, idx) => (
-                    <span
-                      key={idx}
-                      className="px-2 py-1 rounded text-xs"
-                      style={{ backgroundColor: '#f5f1ed', color: '#3d2817' }}
-                    >
+                    <Badge key={idx} variant="secondary" className="text-xs bg-[#f5f1ed] text-[#3d2817]">
                       {sauce}
-                    </span>
+                    </Badge>
                   ))}
                 </div>
               </div>
             )}
           </div>
         )}
+      </CardContent>
 
-        {/* Acciones */}
-        <div className="flex gap-2 mt-4 pt-4 border-t" style={{ borderColor: '#e8dfd3' }}>
-          <button
+      <CardFooter className="p-5 pt-0 flex gap-2">
+          <Button
             onClick={() => onEdit?.(product)}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-colors hover:opacity-80"
-            style={{ backgroundColor: '#c5a880', color: '#ffffff' }}
+            className="flex-1 bg-[#c5a880] hover:bg-[#c5a880]/90 text-white"
+            size="sm"
           >
-            <Edit2 className="w-4 h-4" />
-            <span className="text-sm">Editar</span>
-          </button>
-          <button
+            <Edit2 className="w-4 h-4 mr-2" />
+            Editar
+          </Button>
+          <Button
             onClick={() => onDelete?.(product._id || '')}
-            className="flex items-center justify-center px-4 py-2 rounded-lg transition-colors hover:opacity-80"
-            style={{ backgroundColor: '#d32f2f', color: '#ffffff' }}
+            variant="destructive"
+            size="icon"
+            className="bg-[#d32f2f] hover:bg-[#d32f2f]/90"
           >
             <Trash2 className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+      </CardFooter>
+    </Card>
   );
 }

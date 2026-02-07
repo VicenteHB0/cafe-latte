@@ -3,6 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { Coffee, ShoppingCart, Package, Users, BarChart3, Settings, LogOut, ClipboardList } from 'lucide-react';
 import logo from '@/assets/logo.png';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function StaffMenu({ username = 'Usuario' }) {
   const router = useRouter();
@@ -33,18 +35,18 @@ export function StaffMenu({ username = 'Usuario' }) {
   ];
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f5f1ed' }}>
+    <div className="min-h-screen bg-[#f5f1ed]">
       {/* Header */}
-      <header className="shadow-md" style={{ backgroundColor: '#3d2817' }}>
+      <header className="shadow-md bg-[#3d2817]">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <img src={logo.src} alt="Café Latte" className="w-16 h-16 object-contain" />
               <div>
-                <h1 className="text-2xl" style={{ color: '#ffffff', fontFamily: 'var(--font-brand)' }}>
+                <h1 className="text-2xl text-white" style={{ fontFamily: 'var(--font-brand)' }}>
                   Café Latte
                 </h1>
-                <p className="text-sm" style={{ color: '#c5a880', fontFamily: 'var(--font-body)' }}>
+                <p className="text-sm text-[#c5a880]" style={{ fontFamily: 'var(--font-body)' }}>
                   Sistema de Gestión
                 </p>
               </div>
@@ -52,24 +54,21 @@ export function StaffMenu({ username = 'Usuario' }) {
             
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <p className="text-sm" style={{ color: '#ffffff' }}>
+                <p className="text-sm text-white">
                   Bienvenido/a
                 </p>
-                <p className="font-medium" style={{ color: '#c5a880' }}>
+                <p className="font-medium text-[#c5a880]">
                   {username}
                 </p>
               </div>
-              <button
+              <Button
                 onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors hover:opacity-80"
-                style={{ 
-                  backgroundColor: '#8b7355',
-                  color: '#ffffff'
-                }}
+                className="bg-[#8b7355] text-white hover:bg-[#8b7355]/90"
+                size="sm"
               >
-                <LogOut className="w-4 h-4" />
+                <LogOut className="w-4 h-4 mr-2" />
                 <span className="hidden sm:inline">Salir</span>
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -79,10 +78,10 @@ export function StaffMenu({ username = 'Usuario' }) {
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h2 className="text-2xl mb-2" style={{ color: '#3d2817' }}>
+          <h2 className="text-2xl mb-2 text-[#3d2817]">
             Panel de Control
           </h2>
-          <p style={{ color: '#8b7355' }}>
+          <p className="text-[#8b7355]">
             Selecciona una opción para comenzar
           </p>
         </div>
@@ -92,41 +91,32 @@ export function StaffMenu({ username = 'Usuario' }) {
           {menuItems.map((item, index) => {
             const Icon = item.icon;
             return (
-              <button
+              <Card 
                 key={index}
                 onClick={() => handleNavigate(item.view)}
-                className="bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all"
-                style={{ 
-                  borderLeft: '4px solid #a0826d'
-                }}
+                className="cursor-pointer hover:shadow-xl transition-all border-l-4 border-l-[#a0826d] hover:bg-white/50"
               >
-                <div 
-                  className="w-12 h-12 rounded-lg flex items-center justify-center mb-4"
-                  style={{ backgroundColor: '#f5f1ed' }}
-                >
-                  <Icon 
-                    className="w-6 h-6" 
-                    style={{ color: '#3d2817' }}
-                  />
-                </div>
-                <h3 
-                  className="mb-2"
-                  style={{ color: '#3d2817' }}
-                >
-                  {item.label}
-                </h3>
-                <p 
-                  className="text-sm"
-                  style={{ color: '#8b7355' }}
-                >
-                  {item.description}
-                </p>
-              </button>
+                <CardHeader className="flex flex-row items-center gap-4 pb-2">
+                    <div 
+                    className="w-12 h-12 rounded-lg flex items-center justify-center bg-[#f5f1ed]"
+                    >
+                    <Icon 
+                        className="w-6 h-6 text-[#3d2817]" 
+                    />
+                    </div>
+                    <div>
+                        <CardTitle className="text-lg text-[#3d2817]">{item.label}</CardTitle>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <CardDescription className="text-sm text-[#8b7355]">
+                        {item.description}
+                    </CardDescription>
+                </CardContent>
+              </Card>
             );
           })}
         </div>
-
-        
       </main>
     </div>
   );
