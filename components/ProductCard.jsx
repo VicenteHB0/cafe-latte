@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-export function ProductCard({ product, onEdit, onDelete }) {
+export function ProductCard({ product, onEdit, onDelete, hideActions }) {
   return (
     <Card className="overflow-hidden border-l-4 border-l-[#a0826d] hover:shadow-xl transition-all">
       {/* Imagen */}
@@ -137,24 +137,26 @@ export function ProductCard({ product, onEdit, onDelete }) {
         )}
       </CardContent>
 
-      <CardFooter className="p-5 pt-0 flex gap-2">
-          <Button
-            onClick={() => onEdit?.(product)}
-            className="flex-1 bg-[#c5a880] hover:bg-[#c5a880]/90 text-white"
-            size="sm"
-          >
-            <Edit2 className="w-4 h-4 mr-2" />
-            Editar
-          </Button>
-          <Button
-            onClick={() => onDelete?.(product._id || '')}
-            variant="destructive"
-            size="icon"
-            className="bg-[#d32f2f] hover:bg-[#d32f2f]/90"
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
-      </CardFooter>
+      {!hideActions && (
+        <CardFooter className="p-5 pt-0 flex gap-2">
+            <Button
+              onClick={() => onEdit?.(product)}
+              className="flex-1 bg-[#c5a880] hover:bg-[#c5a880]/90 text-white"
+              size="sm"
+            >
+              <Edit2 className="w-4 h-4 mr-2" />
+              Editar
+            </Button>
+            <Button
+              onClick={() => onDelete?.(product._id || '')}
+              variant="destructive"
+              size="icon"
+              className="bg-[#d32f2f] hover:bg-[#d32f2f]/90"
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 }
