@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,6 +22,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 function ProductSkeleton() {
   return (
@@ -44,6 +52,7 @@ export function ProductMenu() {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('Todos');
+  const [availabilityFilter, setAvailabilityFilter] = useState('all'); // all, available, unavailable
   const [loading, setLoading] = useState(true);
 
   // Estados para diálogos
@@ -78,7 +87,15 @@ export function ProductMenu() {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCategory = activeCategory === 'Todos' || product.category === activeCategory;
-    return matchesSearch && matchesCategory;
+    
+    let matchesAvailability = true;
+    if (availabilityFilter === 'available') {
+        matchesAvailability = product.available === true;
+    } else if (availabilityFilter === 'unavailable') {
+        matchesAvailability = product.available === false;
+    }
+
+    return matchesSearch && matchesCategory && matchesAvailability;
   });
 
   const handleSaveProduct = async (productData) => {
@@ -96,16 +113,20 @@ export function ProductMenu() {
             const savedProduct = await res.json();
             if (method === 'POST') {
                 setProducts([...products, savedProduct]);
+                toast.success("Producto creado", { description: `${savedProduct.name} ha sido agregado al menú.` });
             } else {
                 setProducts(products.map(p => p._id === savedProduct._id ? savedProduct : p));
+                toast.success("Producto actualizado", { description: `${savedProduct.name} ha sido modificado exitosamente.` });
             }
             setIsDialogOpen(false);
             setEditingProduct(null);
         } else {
             console.error('Error saving product');
+            toast.error("Error al guardar", { description: "No se pudo guardar el producto. Inténtalo de nuevo." });
         }
     } catch (error) {
        console.error('Error saving product:', error);
+       toast.error("Error de conexión", { description: "Verifica tu conexión a internet." });
     }
   };
 
@@ -134,119 +155,113 @@ export function ProductMenu() {
 
         if (res.ok) {
             setProducts(products.filter(p => p._id !== productToDelete));
+            toast.success("Producto eliminado", { description: "El producto ha sido eliminado del menú." });
             setIsDeleteDialogOpen(false);
             setProductToDelete(null);
         } else {
             console.error('Error deleting product');
+            toast.error("Error al eliminar", { description: "No se pudo eliminar el producto." });
         }
     } catch (error) {
         console.error('Error deleting product:', error);
+        toast.error("Error de conexión");
     }
   };
 
   return (
     <div className="min-h-screen bg-[#f5f1ed]">
       {/* Header */}
-      <div className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center gap-4 mb-6">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onBack}
-              className="hover:bg-gray-100"
-            >
-              <ArrowLeft className="w-6 h-6 text-[#3d2817]" />
-            </Button>
-            <div>
-              <h1 
-                className="text-3xl text-[#3d2817]"
-                style={{ fontFamily: 'var(--font-brand)' }}
-              >
-                Menú de Productos
-              </h1>
-              <p className="text-sm text-[#8b7355]">
-                Gestiona tu catálogo de productos
-              </p>
+        <div className="h-16 bg-white border-b border-[#e8dfd3] flex items-center px-4 justify-between shrink-0 sticky top-0 z-10">
+            <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" onClick={() => router.push('/menu')}>
+                    <ArrowLeft className="text-[#3d2817]" />
+                </Button>
+                <h1 className="text-xl font-bold text-[#3d2817]">Menú de Productos</h1>
             </div>
-          </div>
-
-          {/* Buscador */}
-          <div className="relative">
-            <Search 
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#8b7355]" 
-            />
-            <Input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Buscar productos..."
-              className="pl-12 py-6 text-lg border-[#c5a880] bg-[#f5f1ed] focus-visible:ring-[#a0826d]"
-            />
-          </div>
+            <div className="flex items-center gap-3 w-[450px]">
+                <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8b7355]" />
+                    <Input 
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="Buscar productos..." 
+                        className="pl-9 h-9 bg-[#f5f1ed] border-none focus-visible:ring-[#a0826d]"
+                    />
+                </div>
+                <Select value={availabilityFilter} onValueChange={setAvailabilityFilter}>
+                    <SelectTrigger className="w-[140px] h-9 bg-[#f5f1ed] border-none text-[#3d2817] focus:ring-[#a0826d]">
+                        <SelectValue placeholder="Estado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">Todos</SelectItem>
+                        <SelectItem value="available">Disponibles</SelectItem>
+                        <SelectItem value="unavailable">Agotados</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
         </div>
-      </div>
 
       {/* Tabs de categorías */}
-      <div className="bg-white border-b border-[#e8dfd3]">
-        <div className="max-w-7xl mx-auto px-4">
+      <div className="bg-white px-2 py-2 shadow-sm shrink-0 items-center border-b border-[#e8dfd3]">
             <ScrollArea className="w-full whitespace-nowrap">
-                <div className="flex w-max space-x-2 py-4">
+                <div className="flex w-max space-x-2 p-1">
                     {categories.map(category => (
-                    <Button
-                        key={category}
-                        variant={activeCategory === category ? "default" : "secondary"}
-                        onClick={() => setActiveCategory(category)}
-                        className={`rounded-full ${activeCategory === category ? "bg-[#3d2817] text-white hover:bg-[#3d2817]/90" : "bg-[#f5f1ed] text-[#3d2817] hover:bg-[#e8dfd3]"}`}
-                    >
-                        {category}
-                    </Button>
+                        <Button
+                            key={category}
+                            variant={activeCategory === category ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setActiveCategory(category)}
+                            className={`rounded-full ${activeCategory === category ? "bg-[#3d2817]" : "text-[#8b7355] border-[#e8dfd3]"}`}
+                        >
+                            {category}
+                        </Button>
                     ))}
                 </div>
                 <ScrollBar orientation="horizontal" />
             </ScrollArea>
-        </div>
       </div>
 
       {/* Grid de productos */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-4">
-          <p className="text-sm text-[#8b7355]">
-            {filteredProducts.length} producto{filteredProducts.length !== 1 ? 's' : ''} encontrado{filteredProducts.length !== 1 ? 's' : ''}
-          </p>
-        </div>
-
-        {loading ? (
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {[...Array(8)].map((_, i) => (
-                  <ProductSkeleton key={i} />
-                ))}
-             </div>
-        ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {/* Card para añadir producto */}
-            <AddProductCard onClick={handleCreateProduct} />
-
-            {/* Cards de productos */}
-            {filteredProducts.map(product => (
-                <ProductCard
-                key={product._id}
-                product={product}
-                onEdit={() => handleEditProduct(product)}
-                onDelete={() => handleDeleteClick(product._id)}
-                />
-            ))}
+      <ScrollArea className="flex-1 bg-[#f5f1ed]">
+        <div className="p-4 md:p-6 lg:p-8">
+            <div className="mb-4 flex items-center justify-between">
+                <p className="text-sm text-[#8b7355]">
+                    {filteredProducts.length} producto{filteredProducts.length !== 1 ? 's' : ''} encontrado{filteredProducts.length !== 1 ? 's' : ''}
+                </p>
             </div>
-        )}
 
-        {!loading && filteredProducts.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-lg text-[#8b7355]">
-              No se encontraron productos
-            </p>
-          </div>
-        )}
-      </div>
+            {loading ? (
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-6">
+                    {[...Array(8)].map((_, i) => (
+                    <ProductSkeleton key={i} />
+                    ))}
+                </div>
+            ) : (
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-6 pb-20">
+                {/* Card para añadir producto */}
+                <AddProductCard onClick={handleCreateProduct} />
+
+                {/* Cards de productos */}
+                {filteredProducts.map(product => (
+                    <ProductCard
+                    key={product._id}
+                    product={product}
+                    onEdit={() => handleEditProduct(product)}
+                    onDelete={() => handleDeleteClick(product._id)}
+                    />
+                ))}
+                </div>
+            )}
+
+            {!loading && filteredProducts.length === 0 && (
+            <div className="text-center py-12">
+                <p className="text-lg text-[#8b7355]">
+                No se encontraron productos
+                </p>
+            </div>
+            )}
+        </div>
+      </ScrollArea>
 
       {/* Dialog para Crear/Editar */}
       <ProductFormDialog 

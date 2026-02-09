@@ -21,8 +21,8 @@ export function StaffMenu({ username = 'Usuario' }) {
     if (view === 'products') {
       router.push('/products');
     } else if (view === 'orders') {
-      // router.push('/orders/new');
-      alert('Funcionalidad de órdenes en desarrollo');
+      router.push('/orders/new');
+      // alert('Funcionalidad de órdenes en desarrollo');
     } else if (view === 'panel') {
       // router.push('/orders/panel');
       alert('Panel de órdenes en desarrollo');
@@ -38,7 +38,7 @@ export function StaffMenu({ username = 'Usuario' }) {
     <div className="min-h-screen bg-[#f5f1ed]">
       {/* Header */}
       <header className="shadow-md bg-[#3d2817]">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="w-full px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <img src={logo.src} alt="Café Latte" className="w-16 h-16 object-contain" />
@@ -75,7 +75,7 @@ export function StaffMenu({ username = 'Usuario' }) {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
+      <main className="w-full px-6 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
           <h2 className="text-2xl mb-2 text-[#3d2817]">
@@ -87,7 +87,7 @@ export function StaffMenu({ username = 'Usuario' }) {
         </div>
 
         {/* Menu Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-6">
           {menuItems.map((item, index) => {
             const Icon = item.icon;
             return (
