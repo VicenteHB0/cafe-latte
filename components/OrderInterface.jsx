@@ -40,9 +40,8 @@ export function OrderInterface() {
 
   // Order State
   const [orderItems, setOrderItems] = useState([]);
+  const [nextOrderNumber, setNextOrderNumber] = useState(null); // Store next order number
 
-  const [customerName, setCustomerName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [animateTotal, setAnimateTotal] = useState(false); // Animation state
 
@@ -52,7 +51,20 @@ export function OrderInterface() {
 
   useEffect(() => {
     fetchProducts();
+    fetchNextOrderNumber();
   }, []);
+
+  const fetchNextOrderNumber = async () => {
+    try {
+        const res = await fetch('/api/orders?nextNumber=true');
+        if (res.ok) {
+            const data = await res.json();
+            setNextOrderNumber(data.nextNumber);
+        }
+    } catch (error) {
+        console.error("Error fetching next order number:", error);
+    }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -156,15 +168,10 @@ export function OrderInterface() {
 
   const handlePlaceOrder = async () => {
     if (orderItems.length === 0) return;
-    if (!customerName.trim()) {
-        toast.error("El nombre del cliente es obligatorio");
-        return;
-    }
 
     try {
         const orderData = {
-            customerName: customerName.trim(),
-            phoneNumber: phoneNumber.trim(),
+            // customerName is now optional/auto-generated
             items: orderItems.map(({ id, ...rest }) => rest), // Remove frontend ID
             total: calculateTotal(),
             paymentMethod,
@@ -180,8 +187,7 @@ export function OrderInterface() {
         if (res.ok) {
             // Success
             setOrderItems([]);
-            setCustomerName('');
-            setPhoneNumber('');
+            fetchNextOrderNumber(); // Refresh for next order
             setMobileView('menu'); // Go back to menu on mobile
             toast.success("Orden Creada", {
                 description: "El pedido se ha enviado a cocina.",
@@ -239,10 +245,7 @@ export function OrderInterface() {
                     </div>
                     <OrderCart 
                         orderItems={orderItems}
-                        customerName={customerName}
-                        setCustomerName={setCustomerName}
-                        phoneNumber={phoneNumber}
-                        setPhoneNumber={setPhoneNumber}
+                        nextOrderNumber={nextOrderNumber}
                         paymentMethod={paymentMethod}
                         setPaymentMethod={setPaymentMethod}
                         removeFromOrder={removeFromOrder}
@@ -276,10 +279,7 @@ export function OrderInterface() {
             <ResizablePanel defaultSize="35" minSize="25" maxSize="50">
                 <OrderCart 
                     orderItems={orderItems}
-                    customerName={customerName}
-                    setCustomerName={setCustomerName}
-                    phoneNumber={phoneNumber}
-                    setPhoneNumber={setPhoneNumber}
+                    nextOrderNumber={nextOrderNumber}
                     paymentMethod={paymentMethod}
                     setPaymentMethod={setPaymentMethod}
                     removeFromOrder={removeFromOrder}

@@ -2,15 +2,11 @@
 
 import { ShoppingCart, Trash2, Minus, CreditCard, Banknote } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function OrderCart({
   orderItems,
-  customerName,
-  setCustomerName,
-  phoneNumber,
-  setPhoneNumber,
+  nextOrderNumber,
   paymentMethod,
   setPaymentMethod,
   removeFromOrder,
@@ -24,19 +20,10 @@ export function OrderCart({
             <h2 className="font-bold text-[#402E24] text-lg flex items-center gap-2">
                 <ShoppingCart className="w-5 h-5" /> Detalle del Pedido
             </h2>
-            <div className="space-y-2 mt-3">
-                <Input 
-                    value={customerName}
-                    onChange={(e) => setCustomerName(e.target.value)}
-                    placeholder="Nombre del Cliente *" 
-                    className="bg-white border-[#B68847] h-9"
-                />
-                <Input 
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    placeholder="Teléfono (Opcional)" 
-                    className="bg-white border-[#B68847] h-9"
-                />
+            <div className="mt-2">
+                <span className="text-3xl font-bold text-[#756046]">
+                    Orden #{nextOrderNumber || '-'}
+                </span>
             </div>
         </div>
 
@@ -117,7 +104,7 @@ export function OrderCart({
 
             <Button 
                 className="w-full bg-[#402E24] hover:bg-[#2b1f18] text-white h-12 text-lg"
-                disabled={orderItems.length === 0 || !customerName.trim()}
+                disabled={orderItems.length === 0}
                 onClick={placeOrder}
             >
                 Confirmar Orden

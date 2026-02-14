@@ -1,9 +1,13 @@
 import mongoose from 'mongoose';
 
 const OrderSchema = new mongoose.Schema({
+  orderNumber: {
+    type: Number,
+    required: true,
+  },
   customerName: {
     type: String,
-    required: [true, 'El nombre del cliente es obligatorio'],
+    default: 'Cliente',
     trim: true,
   },
   phoneNumber: {
