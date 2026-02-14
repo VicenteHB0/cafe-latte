@@ -169,27 +169,27 @@ export function ProductMenu() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f1ed]">
+    <div className="min-h-screen bg-[#F0E0CD]">
       {/* Header */}
-        <div className="h-16 bg-white border-b border-[#e8dfd3] flex items-center px-4 justify-between shrink-0 sticky top-0 z-10">
+        <div className="h-16 bg-[#756046] border-b border-[#A67C52] flex items-center px-4 justify-between shrink-0 sticky top-0 z-10">
             <div className="flex items-center gap-2">
                 <Button variant="ghost" size="icon" onClick={() => router.push('/menu')}>
-                    <ArrowLeft className="text-[#3d2817]" />
+                    <ArrowLeft className="text-white" />
                 </Button>
-                <h1 className="text-xl font-bold text-[#3d2817]">Menú de Productos</h1>
+                <h1 className="text-xl font-bold text-white">Menú de Productos</h1>
             </div>
             <div className="flex items-center gap-3 w-[450px]">
                 <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8b7355]" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#756046]" />
                     <Input 
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         placeholder="Buscar productos..." 
-                        className="pl-9 h-9 bg-[#f5f1ed] border-none focus-visible:ring-[#a0826d]"
+                        className="pl-9 h-9 bg-[#F0E0CD] border-none focus-visible:ring-[#B68847] text-[#402E24]"
                     />
                 </div>
                 <Select value={availabilityFilter} onValueChange={setAvailabilityFilter}>
-                    <SelectTrigger className="w-[140px] h-9 bg-[#f5f1ed] border-none text-[#3d2817] focus:ring-[#a0826d]">
+                    <SelectTrigger className="w-[140px] h-9 bg-[#F0E0CD] border-none text-[#402E24] focus:ring-[#B68847]">
                         <SelectValue placeholder="Estado" />
                     </SelectTrigger>
                     <SelectContent>
@@ -202,7 +202,7 @@ export function ProductMenu() {
         </div>
 
       {/* Tabs de categorías */}
-      <div className="bg-white px-2 py-2 shadow-sm shrink-0 items-center border-b border-[#e8dfd3]">
+      <div className="bg-white px-2 py-2 shadow-sm shrink-0 items-center border-b border-[#A67C52]">
             <ScrollArea className="w-full whitespace-nowrap">
                 <div className="flex w-max space-x-2 p-1">
                     {categories.map(category => (
@@ -211,7 +211,7 @@ export function ProductMenu() {
                             variant={activeCategory === category ? "default" : "outline"}
                             size="sm"
                             onClick={() => setActiveCategory(category)}
-                            className={`rounded-full ${activeCategory === category ? "bg-[#3d2817]" : "text-[#8b7355] border-[#e8dfd3]"}`}
+                            className={`rounded-full ${activeCategory === category ? "bg-[#402E24]" : "text-[#756046] border-[#A67C52]"}`}
                         >
                             {category}
                         </Button>
@@ -222,10 +222,10 @@ export function ProductMenu() {
       </div>
 
       {/* Grid de productos */}
-      <ScrollArea className="flex-1 bg-[#f5f1ed]">
+      <ScrollArea className="flex-1 bg-[#F0E0CD]">
         <div className="p-4 md:p-6 lg:p-8">
             <div className="mb-4 flex items-center justify-between">
-                <p className="text-sm text-[#8b7355]">
+                <p className="text-sm text-[#756046]">
                     {filteredProducts.length} producto{filteredProducts.length !== 1 ? 's' : ''} encontrado{filteredProducts.length !== 1 ? 's' : ''}
                 </p>
             </div>
@@ -255,7 +255,7 @@ export function ProductMenu() {
 
             {!loading && filteredProducts.length === 0 && (
             <div className="text-center py-12">
-                <p className="text-lg text-[#8b7355]">
+                <p className="text-lg text-[#756046]">
                 No se encontraron productos
                 </p>
             </div>
@@ -275,13 +275,13 @@ export function ProductMenu() {
        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-[#3d2817]">¿Estás absolutamente seguro?</AlertDialogTitle>
+            <AlertDialogTitle className="text-[#402E24]">¿Estás absolutamente seguro?</AlertDialogTitle>
             <AlertDialogDescription>
               Esta acción no se puede deshacer. Esto eliminará permanentemente el producto de la base de datos.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-[#e8dfd3] text-[#3d2817]">Cancelar</AlertDialogCancel>
+            <AlertDialogCancel className="border-[#A67C52] text-[#402E24]">Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700 text-white">
               Eliminar
             </AlertDialogAction>

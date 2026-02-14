@@ -94,16 +94,16 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder }) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto bg-[#fffaf5] border-[#a0826d]">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto bg-[#F0E0CD] border-[#A67C52]">
         <DialogHeader>
-            <DialogTitle className="text-2xl text-[#3d2817] font-serif">{product.name}</DialogTitle>
+            <DialogTitle className="text-2xl text-[#402E24] font-serif">{product.name}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
             {/* Sizes */}
             {product.sizes && product.sizes.length > 0 && (
                 <div className="space-y-3">
-                    <Label className="text-[#8b7355] text-base font-semibold">Tamaño</Label>
+                    <Label className="text-[#756046] text-base font-semibold">Tamaño</Label>
                     <RadioGroup 
                         value={selectedSize?.label} 
                         onValueChange={(val) => setSelectedSize(product.sizes.find(s => s.label === val))}
@@ -114,7 +114,7 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder }) 
                                 <RadioGroupItem value={size.label} id={`size-${size.label}`} className="peer sr-only" />
                                 <Label 
                                     htmlFor={`size-${size.label}`} 
-                                    className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-white p-3 hover:bg-[#fffaf5] hover:text-[#3d2817] peer-data-[state=checked]:border-[#3d2817] peer-data-[state=checked]:bg-[#3d2817] peer-data-[state=checked]:text-white cursor-pointer transition-all text-center h-full"
+                                    className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-white p-3 hover:bg-[#F0E0CD] hover:text-[#402E24] peer-data-[state=checked]:border-[#402E24] peer-data-[state=checked]:bg-[#402E24] peer-data-[state=checked]:text-white cursor-pointer transition-all text-center h-full"
                                 >
                                     <span className="font-bold">{size.label}</span>
                                     <span className="text-xs opacity-90">${size.price}</span>
@@ -128,7 +128,7 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder }) 
             {/* Extras */}
             {product.extras && product.extras.length > 0 && (
                 <div className="space-y-3">
-                    <Label className="text-[#8b7355] text-base font-semibold">Extras</Label>
+                    <Label className="text-[#756046] text-base font-semibold">Extras</Label>
                     <div className="grid grid-cols-2 gap-3">
                         {product.extras.map((extra) => {
                             const isSelected = selectedExtras.some(e => e.name === extra.name);
@@ -139,8 +139,8 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder }) 
                                     className={`
                                         cursor-pointer rounded-md border-2 p-3 transition-all flex justify-between items-center
                                         ${isSelected 
-                                            ? 'border-[#3d2817] bg-[#3d2817] text-white' 
-                                            : 'border-muted bg-white hover:bg-[#fffaf5] text-[#3d2817]'}
+                                            ? 'border-[#402E24] bg-[#402E24] text-white' 
+                                            : 'border-muted bg-white hover:bg-[#F0E0CD] text-[#402E24]'}
                                     `}
                                 >
                                     <span className="font-medium text-sm">{extra.name}</span>
@@ -157,7 +157,7 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder }) 
              {/* Flavors */}
              {product.flavors && product.flavors.length > 0 && (
         <div className="space-y-3">
-          <Label className="text-[#8b7355] text-base font-semibold">Sabor <span className="text-red-500">*</span></Label>
+          <Label className="text-[#756046] text-base font-semibold">Sabor <span className="text-red-500">*</span></Label>
           <RadioGroup
             value={selectedFlavor}
             onValueChange={setSelectedFlavor}
@@ -172,7 +172,7 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder }) 
                 />
                 <Label
                   htmlFor={`flavor-${flavor}`}
-                  className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-white p-3 hover:bg-[#fffaf5] hover:text-[#3d2817] peer-data-[state=checked]:border-[#3d2817] peer-data-[state=checked]:bg-[#3d2817] peer-data-[state=checked]:text-white cursor-pointer transition-all text-center h-full"
+                  className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-white p-3 hover:bg-[#F0E0CD] hover:text-[#402E24] peer-data-[state=checked]:border-[#402E24] peer-data-[state=checked]:bg-[#402E24] peer-data-[state=checked]:text-white cursor-pointer transition-all text-center h-full"
                 >
                   <span className="font-medium">{flavor}</span>
                 </Label>
@@ -185,7 +185,7 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder }) 
             {/* Sauces (from options.sauces) */}
             {product.options?.sauces && product.options.sauces.length > 0 && (
                 <div className="space-y-3">
-                    <Label className="text-[#8b7355] text-base font-semibold">Salsas <span className="text-red-500">*</span></Label>
+                    <Label className="text-[#756046] text-base font-semibold">Salsas <span className="text-red-500">*</span></Label>
                     <div className="grid grid-cols-2 gap-3">
                         {product.options.sauces.map((sauce) => {
                             const isSelected = selectedSauce === sauce;
@@ -196,8 +196,8 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder }) 
                                     className={`
                                         cursor-pointer rounded-md border-2 p-3 transition-all text-center
                                         ${isSelected 
-                                            ? 'border-[#3d2817] bg-[#3d2817] text-white' 
-                                            : 'border-muted bg-white hover:bg-[#fffaf5] text-[#3d2817]'}
+                                            ? 'border-[#402E24] bg-[#402E24] text-white' 
+                                            : 'border-muted bg-white hover:bg-[#F0E0CD] text-[#402E24]'}
                                     `}
                                 >
                                     <span className="font-medium text-sm">{sauce}</span>
@@ -210,13 +210,13 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder }) 
 
             {/* Notes */}
             <div className="space-y-3">
-                <Label htmlFor="notes" className="text-[#8b7355]">Notas de preparación</Label>
+                <Label htmlFor="notes" className="text-[#756046]">Notas de preparación</Label>
                 <Textarea 
                     id="notes" 
                     placeholder="Sin hielo, extra caliente, etc." 
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    className="border-[#c5a880] focus-visible:ring-[#a0826d] bg-white"
+                    className="border-[#B68847] focus-visible:ring-[#A67C52] bg-white"
                 />
             </div>
 
@@ -226,32 +226,32 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder }) 
                     variant="outline" 
                     size="icon" 
                     onClick={() => handleQuantityChange(-1)}
-                    className="border-[#8b7355] text-[#3d2817]"
+                    className="border-[#756046] text-[#402E24]"
                 >
                     -
                 </Button>
-                <span className="text-xl font-bold text-[#3d2817] w-8 text-center">{quantity}</span>
+                <span className="text-xl font-bold text-[#402E24] w-8 text-center">{quantity}</span>
                 <Button 
                     variant="outline" 
                     size="icon" 
                     onClick={() => handleQuantityChange(1)}
-                    className="border-[#8b7355] text-[#3d2817]"
+                    className="border-[#756046] text-[#402E24]"
                 >
                     +
                 </Button>
             </div>
 
             {/* Total Item Price Preview */}
-            <div className="text-center text-lg font-bold text-[#3d2817]">
+            <div className="text-center text-lg font-bold text-[#402E24]">
                 Total: ${calculateItemTotal()}
             </div>
         </div>
 
         <DialogFooter>
-            <Button variant="outline" onClick={() => onOpenChange(false)} className="border-none text-[#8b7355] hover:text-[#3d2817]">
+            <Button variant="outline" onClick={() => onOpenChange(false)} className="border-none text-[#756046] hover:text-[#402E24]">
                 Cancelar
             </Button>
-            <Button onClick={handleConfirm} className="bg-[#3d2817] text-white hover:bg-[#5c3d2e]">
+            <Button onClick={handleConfirm} className="bg-[#402E24] text-white hover:bg-[#2b1f18]">
                 Agregar al Pedido
             </Button>
         </DialogFooter>
