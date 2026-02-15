@@ -586,13 +586,21 @@ function EditOrderModal({ order, open, onOpenChange, onSave }) {
     );
 }
 
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+// ... (EditOrderModal remains unchanged)
+
 function OrderCard({ order, status, onUpdateStatus, onDelete, onEdit }) {
     return (
         <Card className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-[#A67C52] overflow-hidden group relative">
             <CardHeader className="p-3 pb-0 gap-0 space-y-0">
                 <div className="flex justify-between items-start">
                     <CardTitle className="text-lg font-bold text-[#402E24] leading-none">
-                        Orden #{order.orderNumber}
+                        Orden #{order.orderNumber} <span className="text-xs text-[#756046]">Total: ${order.total}</span>    
                     </CardTitle>
                     <div className="flex items-center gap-2">
                         <span className="text-xs text-muted-foreground font-mono bg-slate-100 px-1 rounded">
@@ -620,29 +628,64 @@ function OrderCard({ order, status, onUpdateStatus, onDelete, onEdit }) {
                 </div>
             </CardHeader>
 
-            <CardContent className="p-3 pt-0 -mt-1">
-                {/* Items */}
-                <div className="space-y-1 mb-3">
-                    {order.items.slice(0, 4).map((item, idx) => (
-                        <div key={idx} className="text-sm flex justify-between">
-                            <span className="font-medium text-[#402E24]">
-                                {item.quantity}x {item.name}
-                            </span>
+            <Popover>
+                <PopoverTrigger asChild>
+                    <CardContent className="p-3 pt-0 -mt-1 cursor-pointer hover:bg-slate-50 transition-colors rounded-b-lg">
+                        {/* Items */}
+                        <div className="space-y-1 mb-2">
+                            {order.items.slice(0, 2).map((item, idx) => (
+                                <div key={idx} className="text-sm flex justify-between leading-tight">
+                                    <span className="font-medium text-[#402E24] line-clamp-1">
+                                        {item.quantity}x {item.name}
+                                    </span>
+                                </div>
+                            ))}
+                            {order.items.length > 2 && (
+                                <p className="text-xs text-muted-foreground italic">
+                                    + {order.items.length - 2} más...
+                                </p>
+                            )}
                         </div>
-                    ))}
-                    {order.items.length > 4 && (
-                        <p className="text-xs text-muted-foreground italic">
-                            + {order.items.length - 4} más...
-                        </p>
-                    )}
-                </div>
-                
-                {/* Actions */}
-                <div className="flex gap-2 mt-2">
+                    </CardContent>
+                </PopoverTrigger>
+                <PopoverContent 
+                    className="w-[var(--radix-popover-trigger-width)] p-0 bg-[#f9f5f1] border-[#A67C52] shadow-none" 
+                    align="start" 
+                    sideOffset={-4}
+                >
+                    <ScrollArea className="h-[300px] p-3 border-4 border-[#A67C52] rounded-lg -m-[1px]">
+                         <div className="space-y-3">
+                            {order.items.map((item, idx) => (
+                                <div key={idx} className="text-sm border-b border-[#eaddcf] last:border-0 pb-2 last:pb-0">
+                                    <div className="flex justify-between font-bold text-[#402E24]">
+                                        <span>{item.quantity}x {item.name}</span>
+                                        <span>${item.price * item.quantity}</span>
+                                    </div>
+                                    <div className="pl-4 mt-1 space-y-0.5">
+                                        {item.size && <div className="text-xs text-[#756046]">Tamaño: {item.size.label}</div>}
+                                        {item.flavors?.length > 0 && <div className="text-xs text-[#756046]">Sabor: {item.flavors.join(', ')}</div>}
+                                        {item.sauces?.length > 0 && <div className="text-xs text-[#756046]">Salsas: {item.sauces.join(', ')}</div>}
+                                        {item.extras?.map((extra, i) => (
+                                            <div key={i} className="text-xs text-[#756046]">+ {extra.name}</div>
+                                        ))}
+                                        {item.customizations?.map((note, i) => (
+                                            <div key={i} className="text-xs text-[#A67C52] italic">"{note}"</div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </ScrollArea>
+                </PopoverContent>
+            </Popover>
+
+            <div className="px-3 pb-3">
+                {/* Actions moved outside CardContent to separate trigger area */}
+                <div className="flex gap-2">
                     {status === 'pending' && (
                         <Button 
                             className="w-full h-8 bg-blue-600 hover:bg-blue-700 text-white" 
-                            onClick={() => onUpdateStatus(order._id, 'preparing')}
+                            onClick={(e) => { e.stopPropagation(); onUpdateStatus(order._id, 'preparing'); }}
                         >
                             Preparar
                         </Button>
@@ -650,7 +693,7 @@ function OrderCard({ order, status, onUpdateStatus, onDelete, onEdit }) {
                     {status === 'preparing' && (
                         <Button 
                             className="w-full h-8 bg-green-600 hover:bg-green-700 text-white" 
-                            onClick={() => onUpdateStatus(order._id, 'ready')}
+                            onClick={(e) => { e.stopPropagation(); onUpdateStatus(order._id, 'ready'); }}
                         >
                             Listo
                         </Button>
@@ -658,13 +701,13 @@ function OrderCard({ order, status, onUpdateStatus, onDelete, onEdit }) {
                     {status === 'ready' && (
                         <Button 
                             className="w-full h-8 bg-gray-600 hover:bg-gray-700 text-white" 
-                            onClick={() => onUpdateStatus(order._id, 'completed')}
+                            onClick={(e) => { e.stopPropagation(); onUpdateStatus(order._id, 'completed'); }}
                         >
                             Entregar
                         </Button>
                     )}
                 </div>
-            </CardContent>
+            </div>
         </Card>
     );
 }
