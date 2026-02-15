@@ -37,11 +37,13 @@ export async function POST(request) {
   }
 }
 
+// GET: Fetch all or single
 export async function GET(request) {
   try {
     await dbConnect();
     const { searchParams } = new URL(request.url);
     const nextNumber = searchParams.get('nextNumber');
+    const id = searchParams.get('id');
 
     if (nextNumber) {
         const startOfDay = new Date();
@@ -57,6 +59,12 @@ export async function GET(request) {
         return NextResponse.json({ nextNumber: count + 1 });
     }
 
+    if (id) {
+        const order = await Order.findById(id);
+        if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+        return NextResponse.json(order);
+    }
+
     // Default sort by newest first
     const orders = await Order.find({}).sort({ createdAt: -1 });
     return NextResponse.json(orders);
@@ -64,6 +72,82 @@ export async function GET(request) {
     console.error('Error fetching orders:', error);
     return NextResponse.json(
       { error: 'Error fetching orders' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request) {
+  try {
+    await dbConnect();
+    const body = await request.json();
+    const { id, status, items, total, paymentMethod } = body;
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Order ID is required' },
+        { status: 400 }
+      );
+    }
+
+    // If only status is provided, just update status
+    // If items overlap with status update, handle both
+    const updateData = {};
+    if (status) updateData.status = status;
+    if (items) updateData.items = items;
+    if (total) updateData.total = total;
+    if (paymentMethod) updateData.paymentMethod = paymentMethod;
+
+    const order = await Order.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true, runValidators: true }
+    );
+
+    if (!order) {
+      return NextResponse.json(
+        { error: 'Order not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(order);
+  } catch (error) {
+    console.error('Error updating order:', error);
+    return NextResponse.json(
+      { error: 'Error updating order' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request) {
+  try {
+    await dbConnect();
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Order ID is required' },
+        { status: 400 }
+      );
+    }
+
+    const order = await Order.findByIdAndDelete(id);
+
+    if (!order) {
+      return NextResponse.json(
+        { error: 'Order not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ message: 'Order deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting order:', error);
+    return NextResponse.json(
+      { error: 'Error deleting order' },
       { status: 500 }
     );
   }

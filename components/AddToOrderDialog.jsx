@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner"; // Import toast
 
-export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder }) {
+export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder, initialItem = null }) {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedExtras, setSelectedExtras] = useState([]);
@@ -21,15 +21,26 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder }) 
   // Reset state when product changes or dialog opens
   useEffect(() => {
     if (open && product) {
-      setQuantity(1);
-      // Default to first size if available, otherwise null (standard price)
-      setSelectedSize(product.sizes?.length > 0 ? product.sizes[0] : null);
-      setSelectedExtras([]);
-      setSelectedFlavor(null);
-      setSelectedSauce(null);
-      setNotes('');
+        if (initialItem) {
+            // Edit Mode: Hydrate from existing item
+            setQuantity(initialItem.quantity || 1);
+            setSelectedSize(initialItem.size || (product.sizes?.length > 0 ? product.sizes[0] : null));
+            setSelectedExtras(initialItem.extras || []);
+            setSelectedFlavor(initialItem.flavors?.[0] || null);
+            setSelectedSauce(initialItem.sauces?.[0] || null);
+            setNotes(initialItem.customizations?.[0] || '');
+        } else {
+            // Add Mode: Reset
+            setQuantity(1);
+            // Default to first size if available, otherwise null (standard price)
+            setSelectedSize(product.sizes?.length > 0 ? product.sizes[0] : null);
+            setSelectedExtras([]);
+            setSelectedFlavor(null);
+            setSelectedSauce(null);
+            setNotes('');
+        }
     }
-  }, [open, product]);
+  }, [open, product, initialItem]);
 
   if (!product) return null;
 
@@ -96,7 +107,9 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder }) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto bg-[#F0E0CD] border-[#A67C52]">
         <DialogHeader>
-            <DialogTitle className="text-2xl text-[#402E24] font-serif">{product.name}</DialogTitle>
+            <DialogTitle className="text-2xl text-[#402E24] font-serif">
+                {initialItem ? `Editar: ${product.name}` : product.name}
+            </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
@@ -252,7 +265,7 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder }) 
                 Cancelar
             </Button>
             <Button onClick={handleConfirm} className="bg-[#402E24] text-white hover:bg-[#2b1f18]">
-                Agregar al Pedido
+                {initialItem ? "Actualizar Producto" : "Agregar al Pedido"}
             </Button>
         </DialogFooter>
       </DialogContent>

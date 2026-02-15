@@ -24,8 +24,7 @@ export function StaffMenu({ username = 'Usuario' }) {
       router.push('/orders/new');
       // alert('Funcionalidad de órdenes en desarrollo');
     } else if (view === 'panel') {
-      // router.push('/orders/panel');
-      alert('Panel de órdenes en desarrollo');
+      router.push('/orders/board');
     }
   };
   const menuItems = [

@@ -27,7 +27,7 @@ function useIsMobile() {
     return isMobile;
 }
 
-export function OrderInterface() {
+export function OrderInterface({ initialOrder = null }) {
   const router = useRouter();
   const isMobile = useIsMobile();
   const [products, setProducts] = useState([]);
@@ -39,10 +39,13 @@ export function OrderInterface() {
   const [mobileView, setMobileView] = useState('menu'); // 'menu' or 'cart'
 
   // Order State
-  const [orderItems, setOrderItems] = useState([]);
-  const [nextOrderNumber, setNextOrderNumber] = useState(null); // Store next order number
+  // Identify items with unique IDs for frontend if coming from backend
+  const [orderItems, setOrderItems] = useState(
+    initialOrder?.items.map(item => ({ ...item, id: Date.now() + Math.random() })) || []
+  );
+  const [nextOrderNumber, setNextOrderNumber] = useState(initialOrder?.orderNumber || null);
 
-  const [paymentMethod, setPaymentMethod] = useState('cash');
+  const [paymentMethod, setPaymentMethod] = useState(initialOrder?.paymentMethod || 'cash');
   const [animateTotal, setAnimateTotal] = useState(false); // Animation state
 
   // Dialog State
@@ -51,7 +54,9 @@ export function OrderInterface() {
 
   useEffect(() => {
     fetchProducts();
-    fetchNextOrderNumber();
+    if (!initialOrder) {
+        fetchNextOrderNumber();
+    }
   }, []);
 
   const fetchNextOrderNumber = async () => {
@@ -93,7 +98,9 @@ export function OrderInterface() {
   };
 
   const addToOrder = (newItem) => {
+    console.log("Adding item:", newItem);
     setOrderItems(currentItems => {
+      console.log("Current items:", currentItems);
       const existingItemIndex = currentItems.findIndex(item => {
         // Compare Product ID
         if (item.product !== newItem.product) return false;
@@ -127,6 +134,8 @@ export function OrderInterface() {
 
         return true;
       });
+
+      console.log("Index found:", existingItemIndex);
 
       if (existingItemIndex > -1) {
         // Update existing item
@@ -175,28 +184,45 @@ export function OrderInterface() {
             items: orderItems.map(({ id, ...rest }) => rest), // Remove frontend ID
             total: calculateTotal(),
             paymentMethod,
-            status: 'pending'
+            status: initialOrder ? initialOrder.status : 'pending' // Preserve status on edit
         };
 
-        const res = await fetch('/api/orders', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderData)
-        });
+        let res;
+        
+        if (initialOrder) {
+            // UPDATE
+            res = await fetch('/api/orders', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...orderData, id: initialOrder._id })
+            });
+        } else {
+            // CREATE
+            res = await fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            });
+        }
 
         if (res.ok) {
             // Success
-            setOrderItems([]);
-            fetchNextOrderNumber(); // Refresh for next order
-            setMobileView('menu'); // Go back to menu on mobile
-            toast.success("Orden Creada", {
-                description: "El pedido se ha enviado a cocina.",
-            });
+            if (initialOrder) {
+                toast.success("Orden Actualizada");
+                router.push('/orders/board'); // Return to board
+            } else {
+                setOrderItems([]);
+                fetchNextOrderNumber(); // Refresh for next order
+                setMobileView('menu'); // Go back to menu on mobile
+                toast.success("Orden Creada", {
+                    description: "El pedido se ha enviado a cocina.",
+                });
+            }
         } else {
-            toast.error("Error al enviar la orden");
+            toast.error(initialOrder ? "Error al actualizar" : "Error al enviar la orden");
         }
     } catch (error) {
-        console.error("Error creating order:", error);
+        console.error("Error creating/updating order:", error);
         toast.error("Error de conexión");
     }
   };
@@ -252,6 +278,7 @@ export function OrderInterface() {
                         placeOrder={handlePlaceOrder}
                         calculateTotal={calculateTotal}
                         animateTotal={animateTotal}
+                        isEditMode={!!initialOrder}
                     />
                 </div>
             )}
@@ -286,6 +313,7 @@ export function OrderInterface() {
                     placeOrder={handlePlaceOrder}
                     calculateTotal={calculateTotal}
                     animateTotal={animateTotal}
+                    isEditMode={!!initialOrder}
                 />
             </ResizablePanel>
         </ResizablePanelGroup>

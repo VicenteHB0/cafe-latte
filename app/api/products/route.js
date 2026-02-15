@@ -2,10 +2,21 @@ import dbConnect from "@/lib/db";
 import Product from "@/models/Product";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request) {
   await dbConnect();
 
   try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (id) {
+        const product = await Product.findById(id);
+        if (!product) {
+            return NextResponse.json({ error: "Product not found" }, { status: 404 });
+        }
+        return NextResponse.json(product);
+    }
+
     const products = await Product.find({});
     return NextResponse.json(products);
   } catch (error) {
