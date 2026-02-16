@@ -7,39 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { authenticate } from '@/lib/actions';
 
 export function Login() {
   const router = useRouter();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    // Mock authentication - usuarios de ejemplo para el personal
-    const validUsers = [
-      { username: 'admin', password: 'admin123' },
-      { username: 'barista', password: 'cafe123' },
-      { username: 'gerente', password: 'latte123' }
-    ];
 
-    const user = validUsers.find(
-      u => u.username === username && u.password === password
-    );
-
-    if (user) {
-      setError('');
-      // Store user in localStorage for simple persistence
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('user', username);
-        document.cookie = `user=${username}; path=/`;
-      }
-      router.push('/menu');
-    } else {
-      setError('Usuario o contraseña incorrectos');
-    }
-  };
 
   return (
     <div className="min-h-screen flex">
@@ -53,9 +28,14 @@ export function Login() {
             alt="Café Latte" 
             className="w-full h-auto object-contain mb-8"
           />
-          <h2 className="text-5xl text-center mb-4 text-white" style={{ fontFamily: 'var(--font-brand)' }}>
-            Café Latte
-          </h2>
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <h2 className="text-4xl font-bold tracking-widest text-white" style={{ fontFamily: 'var(--font-body)' }}>
+              CAFE
+            </h2>
+            <h2 className="text-6xl text-center text-white" style={{ fontFamily: 'var(--font-brand)' }}>
+              Latte
+            </h2>
+          </div>
           <p className="text-center text-lg text-[#F0E0CD]" style={{ fontFamily: 'var(--font-body)' }}>
             Sistema de Gestión para Personal
           </p>
@@ -76,23 +56,58 @@ export function Login() {
                     className="w-24 h-24 object-contain"
                     />
                 </div>
-                <CardTitle className="text-4xl text-center" style={{ fontFamily: 'var(--font-brand)', color: '#402E24' }}>
-                    Café Latte
+                <CardTitle>
+                    <div className="flex items-center justify-center gap-4 mb-4">
+            <h2 className="text-4xl font-bold tracking-widest text-white" style={{ fontFamily: 'var(--font-body)' }}>
+              CAFE
+            </h2>
+            <h2 className="text-6xl text-center text-white" style={{ fontFamily: 'var(--font-brand)' }}>
+              Latte
+            </h2>
+          </div>
                 </CardTitle>
                 <CardDescription className="text-center text-[#756046]">
                     Ingresa tus credenciales para acceder al sistema
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={async (e) => {
+                    e.preventDefault();
+                    setIsLoading(true);
+                    setError('');
+                    
+                    const formData = new FormData(e.currentTarget);
+                    
+                    try {
+                        // Pass plain object instead of FormData to actions if needed, 
+                        // but actions accept FormData directly.
+                        // However, spread above created an object if not careful.
+                        // Correct usage: pass formData directly.
+                        const result = await authenticate(undefined, formData);
+                        
+                        if (result) {
+                            setError(result);
+                            setIsLoading(false);
+                            return;
+                        }
+                        
+                        // Access granted - redirect manual just in case
+                        router.push('/menu');
+                        router.refresh();
+                        
+                    } catch (err) {
+                        console.error("Login error:", err);
+                        setError("Ocurrió un error inesperado.");
+                        setIsLoading(false);
+                    }
+                }} className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="username" className="text-[#402E24]">Usuario</Label>
                         <Input 
                             id="username" 
+                            name="username"
                             type="text" 
                             placeholder="Ingresa tu usuario"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
                             required
                             className="border-[#B68847] focus-visible:ring-[#A67C52]"
                         />
@@ -101,10 +116,9 @@ export function Login() {
                         <Label htmlFor="password" className="text-[#402E24]">Contraseña</Label>
                         <Input 
                             id="password" 
+                            name="password"
                             type="password" 
                             placeholder="Ingresa tu contraseña"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
                             required
                             className="border-[#B68847] focus-visible:ring-[#A67C52]"
                         />
@@ -118,26 +132,14 @@ export function Login() {
 
                     <Button 
                         type="submit" 
+                        disabled={isLoading}
                         className="w-full bg-[#402E24] hover:bg-[#402E24]/90 text-white"
                         size="lg"
                     >
-                        Iniciar Sesión
+                        {isLoading ? 'Iniciando...' : 'Iniciar Sesión'}
                     </Button>
                 </form>
             </CardContent>
-            <CardFooter className="flex flex-col space-y-2">
-                 {/* Nota de ayuda */}
-                 <div className="w-full p-4 rounded-lg bg-secondary/50">
-                    <p className="text-xs mb-2 font-medium text-[#756046]">
-                    Usuarios de prueba:
-                    </p>
-                    <div className="text-xs space-y-1 text-[#B68847]">
-                    <p>• admin / admin123</p>
-                    <p>• barista / cafe123</p>
-                    <p>• gerente / latte123</p>
-                    </div>
-                </div>
-            </CardFooter>
         </Card>
       </div>
     </div>

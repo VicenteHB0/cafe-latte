@@ -6,15 +6,13 @@ import logo from '@/assets/logo-main.png';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-export function StaffMenu({ username = 'Usuario' }) {
+import { logout } from '@/lib/actions';
+
+export function StaffMenu({ username = 'Usuario', role }) {
   const router = useRouter();
   
-  const handleLogout = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('user');
-      document.cookie = 'user=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
-    }
-    router.push('/login');
+  const handleLogout = async () => {
+    await logout();
   };
 
   const handleNavigate = (view) => {
@@ -22,16 +20,22 @@ export function StaffMenu({ username = 'Usuario' }) {
       router.push('/products');
     } else if (view === 'orders') {
       router.push('/orders/new');
-      // alert('Funcionalidad de órdenes en desarrollo');
     } else if (view === 'panel') {
       router.push('/orders/board');
+    } else if (view === 'admin') {
+      router.push('/admin');
     }
   };
+  
   const menuItems = [
     { icon: ShoppingCart, label: 'Nueva Orden', description: 'Registrar pedido de cliente', view: 'orders' },
     { icon: ClipboardList, label: 'Panel de Órdenes', description: 'Ver pedidos en proceso', view: 'panel' },
     { icon: Coffee, label: 'Menú de Productos', description: 'Gestionar productos y precios', view: 'products' },
   ];
+
+  if (role === 'admin') {
+    menuItems.push({ icon: Users, label: 'Panel Admin', description: 'Gestión de usuarios', view: 'admin' });
+  }
 
   return (
     <div className="min-h-screen bg-[#F0E0CD]">
