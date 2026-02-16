@@ -239,45 +239,58 @@ export function OrdersBoard() {
 
   const columns = getColumns();
 
-  if (loading) return <div className="p-8 text-center">Cargando panel...</div>;
+  if (loading) return <div className="h-screen flex items-center justify-center bg-[#F5F5F5] text-[#402E24]">Cargando panel...</div>;
 
   return (
-    <div className="h-screen flex flex-col bg-[#F0E0CD] overflow-hidden">
+    <div className="h-screen flex flex-col bg-[#F5F5F5] overflow-hidden font-sans">
         {/* Header Consistente */}
-        <div className="h-16 bg-[#756046] border-b border-[#A67C52] flex items-center px-4 justify-between shrink-0 mb-4">
-            <div className="flex items-center gap-2">
+        <div className="h-16 bg-[#402E24] shadow-md flex items-center px-6 justify-between shrink-0 z-10">
+            <div className="flex items-center gap-4">
                 <Button 
                     variant="ghost" 
                     size="icon" 
                     onClick={() => router.push('/menu')}
-                    className="text-white hover:bg-[#A67C52] hover:text-white"
+                    className="text-[#F5F5F5] hover:bg-white/10 hover:text-white transition-colors"
                 >
                     <ArrowLeft />
                 </Button>
-                <h1 className="text-xl font-bold text-white">Panel de Órdenes (KDS)</h1>
+                <div>
+                     <h1 className="text-xl font-bold text-white tracking-wide">Panel de Órdenes</h1>
+                     <p className="text-xs text-gray-300">Gestión de cocina en tiempo real</p>
+                </div>
             </div>
+             {/* <div className="flex items-center gap-2">
+                 <div className="flex items-center gap-1.5 px-3 py-1 bg-white/10 rounded-full text-xs text-white/90">
+                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    En línea
+                 </div>
+            </div> */}
         </div>
 
-        <div className="flex-1 grid grid-cols-4 gap-4 min-h-0">
+        <div className="flex-1 grid grid-cols-4 gap-6 min-h-0 p-6">
             {Object.keys(COLUMN_CONFIG).map(status => {
                 const config = COLUMN_CONFIG[status];
                 const Icon = config.icon;
                 const matches = columns[status] || [];
 
                 return (
-                    <div key={status} className={`flex flex-col h-full rounded-lg border-t-4 ${config.borderColor} bg-white/50 shadow-sm overflow-hidden`}>
-                        <div className={`p-3 ${config.color} flex items-center justify-between rounded-t-sm shrink-0`}>
-                            <h2 className={`font-bold flex items-center gap-2 ${config.textColor}`}>
-                                <Icon size={18} />
-                                {config.title}
-                            </h2>
-                            <Badge variant="secondary" className="bg-white/80 text-black">
+                    <div key={status} className="flex flex-col h-full bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div className={`p-4 border-b border-gray-100 flex items-center justify-between shrink-0 ${status === 'pending' ? 'bg-yellow-50' : status === 'preparing' ? 'bg-blue-50' : status === 'ready' ? 'bg-green-50' : 'bg-gray-50'}`}>
+                            <div className="flex items-center gap-3">
+                                <div className={`p-2 rounded-lg ${config.color.replace('bg-', 'bg-').replace('100', '200')}`}>
+                                    <Icon size={20} className={config.textColor} />
+                                </div>
+                                <h2 className={`font-bold text-lg ${config.textColor}`}>
+                                    {config.title}
+                                </h2>
+                            </div>
+                            <span className="bg-white px-2.5 py-0.5 rounded-full text-sm font-bold text-gray-600 shadow-sm border border-gray-100">
                                 {matches.length}
-                            </Badge>
+                            </span>
                         </div>
                         
-                        <ScrollArea className="flex-1 min-h-0">
-                            <div className="p-2 space-y-3">
+                        <ScrollArea className="flex-1 min-h-0 bg-[#FAFAFA]">
+                            <div className="p-4 space-y-4">
                                 {matches.map(order => (
                                     <OrderCard 
                                         key={order._id} 
@@ -297,13 +310,13 @@ export function OrdersBoard() {
 
         {/* Delete Dialog */}
         <Dialog open={!!orderToDelete} onOpenChange={(open) => !open && setOrderToDelete(null)}>
-            <DialogContent className="sm:max-w-md bg-[#F0E0CD] border-[#A67C52]">
+            <DialogContent className="sm:max-w-md bg-white border-none shadow-2xl">
                 <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2 text-[#402E24]">
-                        {orderToDelete?.status === 'preparing' && <AlertTriangle className="text-orange-600 h-5 w-5" />}
+                    <DialogTitle className="flex items-center gap-2 text-[#402E24] text-xl">
+                        {orderToDelete?.status === 'preparing' && <AlertTriangle className="text-orange-500 h-6 w-6" />}
                         Eliminar Orden #{orderToDelete?.orderNumber}
                     </DialogTitle>
-                    <DialogDescription className="text-[#756046]">
+                    <DialogDescription className="text-gray-500">
                         {orderToDelete?.status === 'preparing' 
                             ? "Esta orden ya está en preparación. ¿Estás seguro de que quieres eliminarla? Esta acción no se puede deshacer."
                             : "¿Estás seguro de que quieres eliminar esta orden permanentemente?"
@@ -312,23 +325,23 @@ export function OrdersBoard() {
                 </DialogHeader>
 
                 {orderToDelete?.status === 'preparing' && (
-                    <div className="grid gap-2 py-4">
-                        <Label htmlFor="confirmation" className="text-[#402E24]">
-                            Para confirmar, escriba <span className="font-bold select-none">Orden #{orderToDelete.orderNumber}</span> abajo:
+                    <div className="grid gap-3 py-4">
+                        <Label htmlFor="confirmation" className="text-[#402E24] font-medium">
+                            Para confirmar, escriba <span className="font-bold select-none bg-gray-100 px-1 rounded">Orden #{orderToDelete.orderNumber}</span> abajo:
                         </Label>
                         <Input
                             id="confirmation"
                             value={deleteReason}
                             onChange={(e) => setDeleteReason(e.target.value)}
                             placeholder={`Orden #${orderToDelete.orderNumber}`}
-                            className="bg-white border-[#A67C52]"
+                            className="bg-gray-50 border-gray-200 focus-visible:ring-[#402E24]"
                             autoComplete="off"
                         />
                     </div>
                 )}
 
-                <DialogFooter className="gap-2 sm:gap-0">
-                    <Button variant="outline" onClick={() => setOrderToDelete(null)} className="border-[#A67C52] text-[#402E24]">
+                <DialogFooter className="gap-3 sm:gap-0">
+                    <Button variant="ghost" onClick={() => setOrderToDelete(null)} className="text-gray-500 hover:text-[#402E24]">
                         Cancelar
                     </Button>
                     <Button 
@@ -338,7 +351,7 @@ export function OrdersBoard() {
                             isDeleting || 
                             (orderToDelete?.status === 'preparing' && deleteReason !== `Orden #${orderToDelete?.orderNumber}`)
                         }
-                        className="bg-red-600 hover:bg-red-700"
+                        className="bg-red-500 hover:bg-red-600 shadow-md"
                     >
                         {isDeleting ? "Eliminando..." : "Eliminar Orden"}
                     </Button>
@@ -348,39 +361,39 @@ export function OrdersBoard() {
 
         {/* Edit Confirmation Dialog (Security Step) */}
         <Dialog open={!!orderToConfirmEdit} onOpenChange={(open) => !open && setOrderToConfirmEdit(null)}>
-            <DialogContent className="sm:max-w-md bg-[#F0E0CD] border-[#A67C52]">
+            <DialogContent className="sm:max-w-md bg-white border-none shadow-2xl">
                 <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2 text-[#402E24]">
-                        <AlertTriangle className="text-orange-600 h-5 w-5" />
+                    <DialogTitle className="flex items-center gap-2 text-[#402E24] text-xl">
+                        <AlertTriangle className="text-orange-500 h-6 w-6" />
                         Editar Orden #{orderToConfirmEdit?.orderNumber}
                     </DialogTitle>
-                    <DialogDescription className="text-[#756046]">
+                    <DialogDescription className="text-gray-500">
                         Esta orden ya está en preparación. Para editarla, debe confirmar su acción.
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="grid gap-2 py-4">
-                    <Label htmlFor="edit-confirmation" className="text-[#402E24]">
-                        Para confirmar, escriba <span className="font-bold select-none">Orden #{orderToConfirmEdit?.orderNumber}</span> abajo:
+                <div className="grid gap-3 py-4">
+                    <Label htmlFor="edit-confirmation" className="text-[#402E24] font-medium">
+                        Para confirmar, escriba <span className="font-bold select-none bg-gray-100 px-1 rounded">Orden #{orderToConfirmEdit?.orderNumber}</span> abajo:
                     </Label>
                     <Input
                         id="edit-confirmation"
                         value={editConfirmation}
                         onChange={(e) => setEditConfirmation(e.target.value)}
                         placeholder={`Orden #${orderToConfirmEdit?.orderNumber}`}
-                        className="bg-white border-[#A67C52]"
+                        className="bg-gray-50 border-gray-200 focus-visible:ring-[#402E24]"
                         autoComplete="off"
                     />
                 </div>
 
-                <DialogFooter className="gap-2 sm:gap-0">
-                    <Button variant="outline" onClick={() => setOrderToConfirmEdit(null)} className="border-[#A67C52] text-[#402E24]">
+                <DialogFooter className="gap-3 sm:gap-0">
+                    <Button variant="ghost" onClick={() => setOrderToConfirmEdit(null)} className="text-gray-500 hover:text-[#402E24]">
                         Cancelar
                     </Button>
                     <Button 
                         onClick={confirmEditAuth}
                         disabled={editConfirmation !== `Orden #${orderToConfirmEdit?.orderNumber}`}
-                        className="bg-[#402E24] hover:bg-[#2b1f18] text-white"
+                        className="bg-[#402E24] hover:bg-[#2b1f18] text-white shadow-md"
                     >
                         Continuar a Edición
                     </Button>
@@ -407,7 +420,7 @@ export function OrdersBoard() {
 
 import { AddToOrderDialog } from "./AddToOrderDialog";
 
-// ... (OrderCard component remains the same)
+// ... (OrderCard component styled below)
 
 function EditOrderModal({ order, open, onOpenChange, onSave }) {
     const [items, setItems] = useState(order.items || []);
@@ -452,9 +465,6 @@ function EditOrderModal({ order, open, onOpenChange, onSave }) {
 
     const handleUpdateItem = (updatedItem) => {
         const newItems = [...items];
-        // Merge the updated fields into the existing item, but keep the ID if it had one (though new items are array elements)
-        // updatedItem comes from AddToOrderDialog which mimics a "fresh" item
-        // We need to ensure we don't lose the product reference ID
         newItems[editingItemIndex] = {
             ...newItems[editingItemIndex],
             ...updatedItem
@@ -499,52 +509,57 @@ function EditOrderModal({ order, open, onOpenChange, onSave }) {
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-lg bg-[#f9f5f1] border-[#A67C52] max-h-[90vh] flex flex-col p-0 overflow-hidden">
-                <DialogHeader className="p-6 pb-2 shrink-0 bg-[#F0E0CD] border-b border-[#A67C52]">
-                    <DialogTitle className="text-2xl font-bold text-[#402E24] serifs">
+            <DialogContent className="sm:max-w-lg bg-white border-none shadow-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden gap-0">
+                <DialogHeader className="p-6 pb-4 shrink-0 bg-[#FAFAFA] border-b border-gray-100">
+                    <DialogTitle className="text-2xl font-bold text-[#402E24] tracking-tight">
                         Editar Orden #{order.orderNumber}
                     </DialogTitle>
-                    <DialogDescription className="text-[#756046]">
+                    <DialogDescription className="text-gray-500">
                         Haga clic en un producto para editarlo.
                     </DialogDescription>
                 </DialogHeader>
 
-                <ScrollArea className="flex-1 px-6 py-4">
-                    <div className="space-y-4">
+                <ScrollArea className="flex-1">
+                    <div className="p-6 space-y-3">
                         {items.length === 0 ? (
-                            <p className="text-center text-gray-400 py-8">Orden vacía</p>
+                            <div className="flex flex-col items-center justify-center py-10 text-gray-400">
+                                <Package size={48} className="mb-2 opacity-20" />
+                                <p>Orden vacía</p>
+                            </div>
                         ) : (
                             items.map((item, idx) => (
                                 <div 
                                     key={idx} 
                                     onClick={() => handleItemClick(item, idx)}
-                                    className="flex justify-between items-start p-3 bg-white rounded-lg shadow-sm border border-[#eaddcf] cursor-pointer hover:bg-orange-50 transition-colors"
+                                    className="flex justify-between items-start p-4 bg-white rounded-xl shadow-sm border border-gray-100 cursor-pointer hover:border-[#A67C52] hover:shadow-md transition-all group"
                                 >
-                                    <div className="flex-1">
-                                        <div className="flex items-center gap-2">
-                                            <span className="font-bold text-[#402E24] text-lg">{item.quantity}x</span>
+                                    <div className="flex-1 mr-4">
+                                        <div className="flex items-center gap-3">
+                                            <span className="flex items-center justify-center w-6 h-6 bg-[#402E24] text-white text-xs font-bold rounded-full shrink-0">
+                                                {item.quantity}
+                                            </span>
                                             <span className="font-bold text-[#402E24] text-lg">{item.name}</span>
                                         </div>
                                         {/* Modifiers */}
-                                        <div className="mt-1 space-y-1">
-                                            {item.size && <div className="text-xs text-[#756046]">Tamaño: {item.size.label}</div>}
-                                            {item.flavors?.length > 0 && <div className="text-xs text-[#756046]">Sabor: {item.flavors.join(', ')}</div>}
-                                            {item.sauces?.length > 0 && <div className="text-xs text-[#756046]">Salsas: {item.sauces.join(', ')}</div>}
+                                        <div className="mt-2 pl-9 space-y-1">
+                                            {item.size && <div className="text-xs text-gray-500 font-medium">Tamaño: {item.size.label}</div>}
+                                            {item.flavors?.length > 0 && <div className="text-xs text-gray-500">Sabor: {item.flavors.join(', ')}</div>}
+                                            {item.sauces?.length > 0 && <div className="text-xs text-gray-500">Salsas: {item.sauces.join(', ')}</div>}
                                             {item.extras?.map((extra, i) => (
-                                                <div key={i} className="text-xs text-[#756046]">+ {extra.name}</div>
+                                                <div key={i} className="text-xs text-[#A67C52] font-medium">+ {extra.name}</div>
                                             ))}
                                             {item.customizations?.map((note, i) => (
-                                                <div key={i} className="text-xs text-[#A67C52] italic">"{note}"</div>
+                                                <div key={i} className="text-xs text-gray-400 italic">"{note}"</div>
                                             ))}
                                         </div>
                                     </div>
-                                    <div className="flex flex-col items-end gap-2">
+                                    <div className="flex flex-col items-end gap-3">
                                         <span className="font-bold text-[#402E24]">${item.price * item.quantity}</span>
                                         <Button 
                                             variant="ghost" 
                                             size="sm"
                                             onClick={(e) => handleRemoveItem(e, idx)}
-                                            className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 w-8 p-0"
+                                            className="text-gray-300 hover:text-red-500 hover:bg-red-50 h-8 w-8 p-0 rounded-full transition-colors"
                                         >
                                             {item.quantity > 1 ? <div className="font-bold text-lg">-</div> : <Trash2 size={16} />}
                                         </Button>
@@ -555,17 +570,17 @@ function EditOrderModal({ order, open, onOpenChange, onSave }) {
                     </div>
                 </ScrollArea>
 
-                <DialogFooter className="p-6 pt-4 bg-[#F0E0CD] border-t border-[#A67C52] gap-2 md:gap-0 shrink-0">
+                <DialogFooter className="p-6 bg-white border-t border-gray-100 gap-2 md:gap-0 shrink-0">
                     <div className="flex-1 flex items-center">
-                        <span className="text-xl font-bold text-[#402E24]">Total: ${calculateTotal()}</span>
+                        <span className="text-xl font-bold text-[#402E24]">Total: <span className="text-2xl">${calculateTotal()}</span></span>
                     </div>
-                    <Button variant="outline" onClick={() => onOpenChange(false)} className="border-[#A67C52] text-[#402E24]">
+                    <Button variant="ghost" onClick={() => onOpenChange(false)} className="text-gray-500 hover:text-[#402E24]">
                         Cancelar
                     </Button>
                     <Button 
                         onClick={handleSave} 
                         disabled={isSaving || items.length === 0}
-                        className="bg-[#402E24] hover:bg-[#2b1f18] text-white"
+                        className="bg-[#402E24] hover:bg-[#2b1f18] text-white shadow-lg px-6"
                     >
                         {isSaving ? "Guardando..." : "Actualizar Orden"}
                     </Button>
@@ -595,29 +610,48 @@ import {
 // ... (EditOrderModal remains unchanged)
 
 function OrderCard({ order, status, onUpdateStatus, onDelete, onEdit }) {
+    // Determine card styling based on status
+    const isNew = status === 'pending';
+    const isPreparing = status === 'preparing';
+    
     return (
-        <Card className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-[#A67C52] overflow-hidden group relative">
-            <CardHeader className="p-3 pb-0 gap-0 space-y-0">
+        <Card className={`group relative transition-all duration-300 border-none shadow-sm hover:shadow-md overflow-hidden ${isNew ? 'ring-2 ring-yellow-400/50' : ''}`}>
+             {/* Status indicator strip */}
+             <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${
+                 status === 'pending' ? 'bg-yellow-400' : 
+                 status === 'preparing' ? 'bg-blue-400' : 
+                 status === 'ready' ? 'bg-green-500' : 'bg-gray-300'
+             }`}></div>
+
+            <CardHeader className="p-4 pb-2 pl-5 space-y-0">
                 <div className="flex justify-between items-start">
-                    <CardTitle className="text-lg font-bold text-[#402E24] leading-none">
-                        Orden #{order.orderNumber} <span className="text-xs text-[#756046]">Total: ${order.total}</span>    
-                    </CardTitle>
-                    <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground font-mono bg-slate-100 px-1 rounded">
-                            {new Date(order.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                        </span>
+                    <div>
+                         <div className="flex items-baseline gap-2">
+                            <h3 className="text-xl font-bold text-[#402E24]">
+                                #{order.orderNumber}
+                            </h3>
+                            <span className="text-xs font-mono text-gray-400">
+                                {new Date(order.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            </span>
+                         </div>
+                         <div className="text-sm font-bold text-[#A67C52] mt-0.5">
+                            Total: ${order.total}
+                         </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-1">
                         {(status === 'pending' || status === 'preparing') && (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="h-6 w-6 p-0 hover:bg-slate-100 rounded-full">
-                                        <MoreVertical className="h-4 w-4 text-gray-500" />
+                                    <Button variant="ghost" className="h-8 w-8 p-0 text-gray-400 hover:text-[#402E24] hover:bg-gray-100 rounded-full">
+                                        <MoreVertical className="h-4 w-4" />
                                     </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuItem onClick={onEdit} className="text-[#402E24] cursor-pointer">
+                                <DropdownMenuContent align="end" className="w-32">
+                                    <DropdownMenuItem onClick={onEdit} className="text-[#402E24] cursor-pointer font-medium">
                                         Editar
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={onDelete} className="text-red-600 cursor-pointer">
+                                    <DropdownMenuItem onClick={onDelete} className="text-red-500 cursor-pointer font-medium focus:text-red-600">
                                         <Trash2 className="mr-2 h-4 w-4" />
                                         Eliminar
                                     </DropdownMenuItem>
@@ -630,46 +664,52 @@ function OrderCard({ order, status, onUpdateStatus, onDelete, onEdit }) {
 
             <Popover>
                 <PopoverTrigger asChild>
-                    <CardContent className="p-3 pt-0 -mt-1 cursor-pointer hover:bg-slate-50 transition-colors rounded-b-lg">
-                        {/* Items */}
-                        <div className="space-y-1 mb-2">
-                            {order.items.slice(0, 2).map((item, idx) => (
-                                <div key={idx} className="text-sm flex justify-between leading-tight">
-                                    <span className="font-medium text-[#402E24] line-clamp-1">
-                                        {item.quantity}x {item.name}
-                                    </span>
+                    <CardContent className="p-4 pt-2 pl-5 cursor-pointer hover:bg-gray-50/50 transition-colors">
+                        {/* Items Preview */}
+                        <div className="space-y-1.5">
+                            {order.items.slice(0, 3).map((item, idx) => (
+                                <div key={idx} className="text-sm flex items-center gap-2 text-gray-700">
+                                     <span className="font-bold text-[#402E24] w-5 text-right shrink-0">{item.quantity}</span>
+                                     <span className="line-clamp-1">{item.name}</span>
                                 </div>
                             ))}
-                            {order.items.length > 2 && (
-                                <p className="text-xs text-muted-foreground italic">
-                                    + {order.items.length - 2} más...
+                            {order.items.length > 3 && (
+                                <p className="text-xs text-[#A67C52] font-medium pl-7 pt-1">
+                                    + {order.items.length - 3} artículos más...
                                 </p>
                             )}
                         </div>
                     </CardContent>
                 </PopoverTrigger>
                 <PopoverContent 
-                    className="w-[var(--radix-popover-trigger-width)] p-0 bg-[#f9f5f1] border-[#A67C52] shadow-none" 
+                    className="w-80 p-0 bg-white border-none shadow-xl rounded-xl overflow-hidden" 
                     align="start" 
-                    sideOffset={-4}
+                    sideOffset={5}
                 >
-                    <ScrollArea className="h-[300px] p-3 border-4 border-[#A67C52] rounded-lg -m-[1px]">
-                         <div className="space-y-3">
+                    <div className="bg-[#402E24] px-4 py-3 text-white flex justify-between items-center">
+                         <span className="font-bold">Orden #{order.orderNumber}</span>
+                         <span className="text-white/80 text-sm">Detalle completo</span>
+                    </div>
+                    <ScrollArea className="h-[320px] bg-[#FAFAFA]">
+                        <div className="p-4 space-y-4">
                             {order.items.map((item, idx) => (
-                                <div key={idx} className="text-sm border-b border-[#eaddcf] last:border-0 pb-2 last:pb-0">
-                                    <div className="flex justify-between font-bold text-[#402E24]">
-                                        <span>{item.quantity}x {item.name}</span>
-                                        <span>${item.price * item.quantity}</span>
+                                <div key={idx} className="text-sm border-b border-gray-100 last:border-0 pb-3 last:pb-0">
+                                    <div className="flex justify-between items-start">
+                                        <div className="flex gap-3">
+                                             <span className="font-bold text-[#402E24] bg-gray-100 px-2 rounded-md h-6 flex items-center">{item.quantity}</span>
+                                             <span className="font-bold text-[#402E24] text-base">{item.name}</span>
+                                        </div>
+                                        <span className="text-gray-500 font-medium">${item.price * item.quantity}</span>
                                     </div>
-                                    <div className="pl-4 mt-1 space-y-0.5">
-                                        {item.size && <div className="text-xs text-[#756046]">Tamaño: {item.size.label}</div>}
-                                        {item.flavors?.length > 0 && <div className="text-xs text-[#756046]">Sabor: {item.flavors.join(', ')}</div>}
-                                        {item.sauces?.length > 0 && <div className="text-xs text-[#756046]">Salsas: {item.sauces.join(', ')}</div>}
+                                    <div className="pl-9 mt-1 space-y-1">
+                                        {item.size && <div className="text-xs text-gray-500 bg-white inline-block px-1.5 rounded border border-gray-100 mr-1">{item.size.label}</div>}
+                                        {item.flavors?.length > 0 && <div className="text-xs text-gray-500">Sabor: {item.flavors.join(', ')}</div>}
+                                        {item.sauces?.length > 0 && <div className="text-xs text-gray-500">Salsas: {item.sauces.join(', ')}</div>}
                                         {item.extras?.map((extra, i) => (
-                                            <div key={i} className="text-xs text-[#756046]">+ {extra.name}</div>
+                                            <div key={i} className="text-xs text-[#A67C52] font-medium">+ {extra.name}</div>
                                         ))}
                                         {item.customizations?.map((note, i) => (
-                                            <div key={i} className="text-xs text-[#A67C52] italic">"{note}"</div>
+                                            <div key={i} className="text-xs text-gray-400 italic bg-yellow-50 p-1.5 rounded-md mt-1">"{note}"</div>
                                         ))}
                                     </div>
                                 </div>
@@ -679,31 +719,30 @@ function OrderCard({ order, status, onUpdateStatus, onDelete, onEdit }) {
                 </PopoverContent>
             </Popover>
 
-            <div className="px-3 pb-3">
-                {/* Actions moved outside CardContent to separate trigger area */}
-                <div className="flex gap-2">
+            <div className="px-4 pb-4 pl-5">
+                <div className="grid gap-2">
                     {status === 'pending' && (
                         <Button 
-                            className="w-full h-8 bg-blue-600 hover:bg-blue-700 text-white" 
+                            className="w-full h-9 bg-blue-600 hover:bg-blue-700 text-white shadow-sm font-medium transition-all active:scale-95" 
                             onClick={(e) => { e.stopPropagation(); onUpdateStatus(order._id, 'preparing'); }}
                         >
-                            Preparar
+                            Comenzar Preparación
                         </Button>
                     )}
                     {status === 'preparing' && (
                         <Button 
-                            className="w-full h-8 bg-green-600 hover:bg-green-700 text-white" 
+                            className="w-full h-9 bg-green-600 hover:bg-green-700 text-white shadow-sm font-medium transition-all active:scale-95 animate-pulse hover:animate-none" 
                             onClick={(e) => { e.stopPropagation(); onUpdateStatus(order._id, 'ready'); }}
                         >
-                            Listo
+                            Marcar como Listo
                         </Button>
                     )}
                     {status === 'ready' && (
                         <Button 
-                            className="w-full h-8 bg-gray-600 hover:bg-gray-700 text-white" 
+                            className="w-full h-9 bg-[#402E24] hover:bg-[#2b1f18] text-white shadow-sm font-medium transition-all active:scale-95" 
                             onClick={(e) => { e.stopPropagation(); onUpdateStatus(order._id, 'completed'); }}
                         >
-                            Entregar
+                            Entregar Orden
                         </Button>
                     )}
                 </div>

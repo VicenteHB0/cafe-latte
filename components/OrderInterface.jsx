@@ -228,7 +228,7 @@ export function OrderInterface({ initialOrder = null }) {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-[#f5f1ed] overflow-hidden relative">
+    <div className="h-screen flex flex-col bg-[#F5F5F5] overflow-hidden relative">
       {isMobile ? (
         // MOBILE LAYOUT
         <div className="flex-1 h-full overflow-hidden flex flex-col">

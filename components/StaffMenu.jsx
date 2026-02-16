@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from 'next/navigation';
-import { Coffee, ShoppingCart, Package, Users, BarChart3, Settings, LogOut, ClipboardList } from 'lucide-react';
-import logo from '@/assets/logo-main.png';
+import { Coffee, ShoppingCart, Package, Users, BarChart3, Settings, LogOut, ClipboardList, UtensilsCrossed } from 'lucide-react';
+import logo from '@/assets/logo.png'; // Usar el logo del login para consistencia si es el mismo
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -38,39 +38,45 @@ export function StaffMenu({ username = 'Usuario', role }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#F0E0CD]">
+    <div className="min-h-screen bg-[#F5F5F5] relative overflow-hidden">
       {/* Header */}
-      <header className="shadow-md bg-[#756046]">
+      <header className="relative z-20 bg-[#402E24] shadow-lg">
         <div className="w-full px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <img src={logo.src} alt="Café Latte" className="w-16 h-16 object-contain" />
-              <div>
-                <h1 className="text-2xl text-white" style={{ fontFamily: 'var(--font-brand)' }}>
-                  Café Latte
-                </h1>
-                <p className="text-sm text-[#c5a880]" style={{ fontFamily: 'var(--font-body)' }}>
+              <div className="bg-[#E5E5E5] p-2 rounded-full">
+                <img src={logo.src} alt="Café Latte" className="w-12 h-12 object-contain" />
+              </div>
+              <div className="hidden sm:block">
+                <div className="flex items-center gap-2">
+                    <h5 className="text-2xl text-[#E5E5E5] font-bold tracking-widest" style={{ fontFamily: 'var(--font-body)' }}>
+                        CAFE
+                    </h5>
+                    <span className="text-2xl text-[#E5E5E5]" style={{ fontFamily: 'var(--font-brand)' }}>Latte</span>
+                </div>
+                <p className="text-xs text-[#F0E0CD]/80" style={{ fontFamily: 'var(--font-body)' }}>
                   Sistema de Gestión
                 </p>
               </div>
             </div>
             
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm text-white">
-                  Bienvenido/a
+            <div className="flex items-center gap-6">
+              <div className="text-right hidden sm:block">
+                <p className="text-xs text-[#F0E0CD]/60 uppercase tracking-wider">
+                  Bienvenido
                 </p>
-                <p className="font-medium text-[#B68847]">
+                <p className="font-bold text-white text-lg">
                   {username}
                 </p>
               </div>
               <Button
                 onClick={handleLogout}
-                className="bg-[#756046] text-white hover:bg-[#756046]/90"
+                variant="ghost"
+                className="text-[#F0E0CD] hover:text-white hover:bg-[#B68847]/20 transition-colors"
                 size="sm"
               >
-                <LogOut className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">Salir</span>
+                <LogOut className="w-5 h-5 mr-2" />
+                <span className="hidden sm:inline">Cerrar Sesión</span>
               </Button>
             </div>
           </div>
@@ -78,43 +84,48 @@ export function StaffMenu({ username = 'Usuario', role }) {
       </header>
 
       {/* Main Content */}
-      <main className="w-full px-6 py-8">
+      <main className="relative z-20 w-full px-6 py-12 max-w-7xl mx-auto">
         {/* Welcome Section */}
-        <div className="mb-8">
-          <h2 className="text-2xl mb-2 text-[#402E24]">
+        <div className="mb-12 text-center sm:text-left">
+          <h2 className="text-4xl font-bold mb-3 text-[#402E24]" style={{ fontFamily: 'var(--font-brand)' }}>
             Panel de Control
           </h2>
-          <p className="text-[#756046]">
-            Selecciona una opción para comenzar
+          <p className="text-[#756046] text-lg max-w-2xl">
+            Bienvenido al sistema. Selecciona una de las opciones disponibles para comenzar a trabajar.
           </p>
         </div>
 
         {/* Menu Grid */}
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {menuItems.map((item, index) => {
             const Icon = item.icon;
             return (
               <Card 
                 key={index}
                 onClick={() => handleNavigate(item.view)}
-                className="cursor-pointer hover:shadow-xl transition-all border-l-4 border-l-[#A67C52] hover:bg-white/50"
+                className="group cursor-pointer border-none shadow-xl bg-white/90 backdrop-blur-sm hover:bg-white transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl overflow-hidden relative"
               >
-                <CardHeader className="flex flex-row items-center gap-4 pb-2">
+                <div className="absolute top-0 left-0 w-2 h-full bg-[#A67C52] transition-all group-hover:w-full group-hover:opacity-10 z-0"></div>
+                
+                <CardHeader className="relative z-10 flex flex-col items-start gap-4 pb-2">
                     <div 
-                    className="w-12 h-12 rounded-lg flex items-center justify-center bg-[#F0E0CD]"
+                    className="w-16 h-16 rounded-2xl flex items-center justify-center bg-[#F5F5F5] group-hover:bg-[#402E24] transition-colors duration-300 shadow-inner"
                     >
                     <Icon 
-                        className="w-6 h-6 text-[#402E24]" 
+                        className="w-8 h-8 text-[#402E24] group-hover:text-[#B68847] transition-colors duration-300" 
                     />
                     </div>
                     <div>
-                        <CardTitle className="text-lg text-[#402E24]">{item.label}</CardTitle>
+                        <CardTitle className="text-xl font-bold text-[#402E24] mb-1">{item.label}</CardTitle>
+                        <CardDescription className="text-sm font-medium text-[#A67C52]">
+                            Acceso Rápido
+                        </CardDescription>
                     </div>
                 </CardHeader>
-                <CardContent>
-                    <CardDescription className="text-sm text-[#756046]">
+                <CardContent className="relative z-10">
+                    <p className="text-gray-500 text-sm leading-relaxed">
                         {item.description}
-                    </CardDescription>
+                    </p>
                 </CardContent>
               </Card>
             );

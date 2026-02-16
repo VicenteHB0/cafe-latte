@@ -19,58 +19,62 @@ export default async function AdminPage() {
   const users = await getUsers();
 
   return (
-    <div className="min-h-screen bg-[#F0E0CD] p-8">
+    <div className="min-h-screen bg-[#F5F5F5] p-8">
       <div className="max-w-6xl mx-auto space-y-8">
         
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 bg-[#402E24] p-6 rounded-2xl shadow-lg text-white">
           <div>
-            <h1 className="text-4xl font-bold text-[#402E24]" style={{ fontFamily: 'var(--font-brand)' }}>
+            <h1 className="text-3xl font-bold" style={{ fontFamily: 'var(--font-brand)' }}>
               Panel de Administración
             </h1>
-            <p className="text-[#756046]">Gestión de usuarios y personal</p>
+            <p className="text-[#F0E0CD]/80">Gestión de usuarios y personal</p>
           </div>
-          <p className="text-[#B68847] font-medium">
-            Total Usuarios: {users.length}
-          </p>
+          <div className="bg-[#B68847]/20 px-4 py-2 rounded-lg border border-[#B68847]/30">
+            <p className="text-[#F0E0CD] font-medium">
+              Total Usuarios: <span className="text-white font-bold text-lg ml-1">{users.length}</span>
+            </p>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* Formulario de Creación */}
           <div className="lg:col-span-1">
-            <Card className="bg-white/80 backdrop-blur-sm border-none shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-[#402E24]">
-                  <UserPlus className="w-5 h-5" />
+            <Card className="bg-white border-none shadow-md hover:shadow-xl transition-all duration-300">
+              <CardHeader className="bg-gray-50/50 border-b border-gray-100 pb-4">
+                <CardTitle className="flex items-center gap-2 text-[#402E24] text-xl">
+                  <div className="p-2 bg-[#402E24]/10 rounded-lg">
+                    <UserPlus className="w-5 h-5 text-[#402E24]" />
+                  </div>
                   Nuevo Usuario
                 </CardTitle>
-                <CardDescription>Agrega un nuevo miembro al equipo</CardDescription>
+                <CardDescription className="text-gray-500">Agrega un nuevo miembro al equipo</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-6">
                 <form action={async (formData) => {
                   "use server";
                   await createUser(formData);
-                }} className="space-y-4">
+                }} className="space-y-5">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Nombre Completo</Label>
-                    <Input name="name" placeholder="Ej. Juan Pérez" required className="border-[#B68847]" />
+                    <Label htmlFor="name" className="text-gray-700 font-medium">Nombre Completo</Label>
+                    <Input name="name" placeholder="Ej. Juan Pérez" required className="border-gray-200 focus:border-[#402E24] focus:ring-[#402E24]/10 bg-gray-50/50" />
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="username">Usuario</Label>
-                    <Input name="username" placeholder="Ej. jperez" required className="border-[#B68847]" />
+                    <Label htmlFor="username" className="text-gray-700 font-medium">Usuario</Label>
+                    <Input name="username" placeholder="Ej. jperez" required className="border-gray-200 focus:border-[#402E24] focus:ring-[#402E24]/10 bg-gray-50/50" />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="password">Contraseña</Label>
-                    <Input name="password" type="password" placeholder="******" required className="border-[#B68847]" />
+                    <Label htmlFor="password" className="text-gray-700 font-medium">Contraseña</Label>
+                    <Input name="password" type="password" placeholder="******" required className="border-gray-200 focus:border-[#402E24] focus:ring-[#402E24]/10 bg-gray-50/50" />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="role">Rol</Label>
+                    <Label htmlFor="role" className="text-gray-700 font-medium">Rol</Label>
                     <Select name="role" required defaultValue="staff">
-                      <SelectTrigger className="border-[#B68847]">
+                      <SelectTrigger className="border-gray-200 bg-gray-50/50 focus:ring-[#402E24]/10">
                         <SelectValue placeholder="Selecciona un rol" />
                       </SelectTrigger>
                       <SelectContent>
@@ -80,7 +84,7 @@ export default async function AdminPage() {
                     </Select>
                   </div>
 
-                  <Button type="submit" className="w-full bg-[#402E24] hover:bg-[#402E24]/90 text-white">
+                  <Button type="submit" className="w-full bg-[#402E24] hover:bg-[#2b1f18] text-white shadow-md hover:shadow-lg transition-all h-10 mt-2">
                     Crear Usuario
                   </Button>
                 </form>
@@ -90,37 +94,41 @@ export default async function AdminPage() {
 
           {/* Lista de Usuarios */}
           <div className="lg:col-span-2">
-            <Card className="bg-white/80 backdrop-blur-sm border-none shadow-lg h-full">
-              <CardHeader>
-                <CardTitle className="text-[#402E24]">Usuarios Registrados</CardTitle>
+            <Card className="bg-white border-none shadow-md h-full overflow-hidden">
+              <CardHeader className="bg-gray-50/50 border-b border-gray-100 pb-4">
+                <CardTitle className="text-[#402E24] flex items-center gap-2">
+                    <div className="p-2 bg-[#402E24]/10 rounded-lg">
+                        <User className="w-5 h-5 text-[#402E24]" />
+                    </div>
+                    Usuarios Registrados
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="rounded-md border border-[#B68847]/20">
+              <CardContent className="p-0">
                   <Table>
                     <TableHeader>
-                      <TableRow className="border-b-[#B68847]/20 hover:bg-[#F0E0CD]/20">
-                        <TableHead className="text-[#756046]">Nombre</TableHead>
-                        <TableHead className="text-[#756046]">Usuario</TableHead>
-                        <TableHead className="text-[#756046]">Rol</TableHead>
-                        <TableHead className="text-right text-[#756046]">Acciones</TableHead>
+                      <TableRow className="border-b border-gray-100 bg-gray-50/30 hover:bg-gray-50/50">
+                        <TableHead className="text-[#A67C52] font-semibold pl-6">Nombre</TableHead>
+                        <TableHead className="text-[#A67C52] font-semibold">Usuario</TableHead>
+                        <TableHead className="text-[#A67C52] font-semibold">Rol</TableHead>
+                        <TableHead className="text-right text-[#A67C52] font-semibold pr-6">Acciones</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {users.map((user) => (
-                        <TableRow key={user._id} className="border-b-[#B68847]/20 hover:bg-[#F0E0CD]/20">
-                          <TableCell className="font-medium text-[#402E24]">{user.name}</TableCell>
-                          <TableCell className="text-[#756046]">{user.username}</TableCell>
+                        <TableRow key={user._id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                          <TableCell className="font-medium text-gray-700 pl-6 py-4">{user.name}</TableCell>
+                          <TableCell className="text-gray-500">{user.username}</TableCell>
                           <TableCell>
-                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${
                               user.role === 'admin' 
-                                ? 'bg-[#402E24] text-white' 
-                                : 'bg-[#F0E0CD] text-[#756046]'
+                                ? 'bg-[#402E24]/10 text-[#402E24] border-[#402E24]/20' 
+                                : 'bg-gray-100 text-gray-600 border-gray-200'
                             }`}>
                               {user.role === 'admin' ? <Shield className="w-3 h-3" /> : <User className="w-3 h-3" />}
                               {user.role === 'admin' ? 'Admin' : 'Staff'}
                             </span>
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell className="text-right pr-6">
                              <form action={async () => {
                               "use server";
                               await deleteUser(user._id);
@@ -128,7 +136,7 @@ export default async function AdminPage() {
                               <Button 
                                 variant="ghost" 
                                 size="icon" 
-                                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                className="text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
                                 disabled={user.username === 'admin'} // Protect main admin
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -139,7 +147,6 @@ export default async function AdminPage() {
                       ))}
                     </TableBody>
                   </Table>
-                </div>
               </CardContent>
             </Card>
           </div>

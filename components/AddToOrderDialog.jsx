@@ -105,18 +105,18 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder, in
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto bg-[#F0E0CD] border-[#A67C52]">
-        <DialogHeader>
-            <DialogTitle className="text-2xl text-[#402E24] font-serif">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto bg-white border-none shadow-2xl p-0 gap-0">
+        <DialogHeader className="p-6 pb-2 border-b border-gray-100 bg-[#FAFAFA]">
+            <DialogTitle className="text-2xl text-[#402E24] font-serif tracking-tight">
                 {initialItem ? `Editar: ${product.name}` : product.name}
             </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="space-y-6 p-6">
             {/* Sizes */}
             {product.sizes && product.sizes.length > 0 && (
                 <div className="space-y-3">
-                    <Label className="text-[#756046] text-base font-semibold">Tamaño</Label>
+                    <Label className="text-[#402E24] text-sm font-bold uppercase tracking-wider">Tamaño</Label>
                     <RadioGroup 
                         value={selectedSize?.label} 
                         onValueChange={(val) => setSelectedSize(product.sizes.find(s => s.label === val))}
@@ -127,10 +127,10 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder, in
                                 <RadioGroupItem value={size.label} id={`size-${size.label}`} className="peer sr-only" />
                                 <Label 
                                     htmlFor={`size-${size.label}`} 
-                                    className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-white p-3 hover:bg-[#F0E0CD] hover:text-[#402E24] peer-data-[state=checked]:border-[#402E24] peer-data-[state=checked]:bg-[#402E24] peer-data-[state=checked]:text-white cursor-pointer transition-all text-center h-full"
+                                    className="flex flex-col items-center justify-center rounded-xl border-2 border-gray-100 bg-white p-3 hover:bg-[#F5F5F5] hover:border-[#A67C52]/50 peer-data-[state=checked]:border-[#402E24] peer-data-[state=checked]:bg-[#402E24] peer-data-[state=checked]:text-white cursor-pointer transition-all duration-200 text-center h-full shadow-sm peer-data-[state=checked]:shadow-md"
                                 >
-                                    <span className="font-bold">{size.label}</span>
-                                    <span className="text-xs opacity-90">${size.price}</span>
+                                    <span className="font-bold text-sm">{size.label}</span>
+                                    <span className="text-xs opacity-80 mt-1">${size.price}</span>
                                 </Label>
                             </div>
                         ))}
@@ -141,7 +141,7 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder, in
             {/* Extras */}
             {product.extras && product.extras.length > 0 && (
                 <div className="space-y-3">
-                    <Label className="text-[#756046] text-base font-semibold">Extras</Label>
+                    <Label className="text-[#402E24] text-sm font-bold uppercase tracking-wider">Extras</Label>
                     <div className="grid grid-cols-2 gap-3">
                         {product.extras.map((extra) => {
                             const isSelected = selectedExtras.some(e => e.name === extra.name);
@@ -150,14 +150,14 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder, in
                                     key={extra.name}
                                     onClick={() => toggleExtra(extra)}
                                     className={`
-                                        cursor-pointer rounded-md border-2 p-3 transition-all flex justify-between items-center
+                                        cursor-pointer rounded-xl border-2 p-3 transition-all duration-200 flex justify-between items-center shadow-sm
                                         ${isSelected 
-                                            ? 'border-[#402E24] bg-[#402E24] text-white' 
-                                            : 'border-muted bg-white hover:bg-[#F0E0CD] text-[#402E24]'}
+                                            ? 'border-[#402E24] bg-[#402E24] text-white shadow-md' 
+                                            : 'border-gray-100 bg-white hover:bg-[#F5F5F5] hover:border-[#A67C52]/50 text-gray-600'}
                                     `}
                                 >
                                     <span className="font-medium text-sm">{extra.name}</span>
-                                    <span className="text-xs opacity-90">+${extra.price}</span>
+                                    <span className="text-xs opacity-90 font-bold">+${extra.price}</span>
                                 </div>
                             );
                         })}
@@ -165,12 +165,10 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder, in
                 </div>
             )}
 
-
-
              {/* Flavors */}
              {product.flavors && product.flavors.length > 0 && (
         <div className="space-y-3">
-          <Label className="text-[#756046] text-base font-semibold">Sabor <span className="text-red-500">*</span></Label>
+          <Label className="text-[#402E24] text-sm font-bold uppercase tracking-wider">Sabor <span className="text-red-500">*</span></Label>
           <RadioGroup
             value={selectedFlavor}
             onValueChange={setSelectedFlavor}
@@ -185,9 +183,9 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder, in
                 />
                 <Label
                   htmlFor={`flavor-${flavor}`}
-                  className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-white p-3 hover:bg-[#F0E0CD] hover:text-[#402E24] peer-data-[state=checked]:border-[#402E24] peer-data-[state=checked]:bg-[#402E24] peer-data-[state=checked]:text-white cursor-pointer transition-all text-center h-full"
+                  className="flex flex-col items-center justify-center rounded-xl border-2 border-gray-100 bg-white p-3 hover:bg-[#F5F5F5] hover:border-[#A67C52]/50 peer-data-[state=checked]:border-[#402E24] peer-data-[state=checked]:bg-[#402E24] peer-data-[state=checked]:text-white cursor-pointer transition-all duration-200 text-center h-full shadow-sm"
                 >
-                  <span className="font-medium">{flavor}</span>
+                  <span className="font-medium text-sm">{flavor}</span>
                 </Label>
               </div>
             ))}
@@ -195,10 +193,10 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder, in
         </div>
             )}
 
-            {/* Sauces (from options.sauces) */}
+            {/* Sauces */}
             {product.options?.sauces && product.options.sauces.length > 0 && (
                 <div className="space-y-3">
-                    <Label className="text-[#756046] text-base font-semibold">Salsas <span className="text-red-500">*</span></Label>
+                    <Label className="text-[#402E24] text-sm font-bold uppercase tracking-wider">Salsas <span className="text-red-500">*</span></Label>
                     <div className="grid grid-cols-2 gap-3">
                         {product.options.sauces.map((sauce) => {
                             const isSelected = selectedSauce === sauce;
@@ -207,10 +205,10 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder, in
                                     key={sauce}
                                     onClick={() => handleSauceSelect(sauce)}
                                     className={`
-                                        cursor-pointer rounded-md border-2 p-3 transition-all text-center
+                                        cursor-pointer rounded-xl border-2 p-3 transition-all duration-200 text-center shadow-sm
                                         ${isSelected 
-                                            ? 'border-[#402E24] bg-[#402E24] text-white' 
-                                            : 'border-muted bg-white hover:bg-[#F0E0CD] text-[#402E24]'}
+                                            ? 'border-[#402E24] bg-[#402E24] text-white shadow-md' 
+                                            : 'border-gray-100 bg-white hover:bg-[#F5F5F5] hover:border-[#A67C52]/50 text-gray-600'}
                                     `}
                                 >
                                     <span className="font-medium text-sm">{sauce}</span>
@@ -223,50 +221,50 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder, in
 
             {/* Notes */}
             <div className="space-y-3">
-                <Label htmlFor="notes" className="text-[#756046]">Notas de preparación</Label>
+                <Label htmlFor="notes" className="text-[#402E24] text-sm font-bold uppercase tracking-wider">Notas de preparación</Label>
                 <Textarea 
                     id="notes" 
-                    placeholder="Sin hielo, extra caliente, etc." 
+                    placeholder="Escribe aquí instrucciones especiales..." 
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    className="border-[#B68847] focus-visible:ring-[#A67C52] bg-white"
+                    className="border-gray-200 focus-visible:ring-[#402E24] bg-gray-50/50 min-h-[80px]"
                 />
             </div>
 
             {/* Quantity */}
-            <div className="flex items-center justify-center space-x-4 pt-4">
+            <div className="flex items-center justify-center space-x-6 py-2">
                 <Button 
                     variant="outline" 
                     size="icon" 
                     onClick={() => handleQuantityChange(-1)}
-                    className="border-[#756046] text-[#402E24]"
+                    className="h-12 w-12 rounded-full border-2 border-gray-200 text-gray-600 hover:border-[#402E24] hover:text-[#402E24] transition-colors"
                 >
-                    -
+                    <span className="text-xl font-bold mb-1">-</span>
                 </Button>
-                <span className="text-xl font-bold text-[#402E24] w-8 text-center">{quantity}</span>
+                <span className="text-3xl font-bold text-[#402E24] w-12 text-center font-serif">{quantity}</span>
                 <Button 
                     variant="outline" 
                     size="icon" 
                     onClick={() => handleQuantityChange(1)}
-                    className="border-[#756046] text-[#402E24]"
+                    className="h-12 w-12 rounded-full border-2 border-gray-200 text-gray-600 hover:border-[#402E24] hover:text-[#402E24] transition-colors"
                 >
-                    +
+                    <span className="text-xl font-bold mb-1">+</span>
                 </Button>
-            </div>
-
-            {/* Total Item Price Preview */}
-            <div className="text-center text-lg font-bold text-[#402E24]">
-                Total: ${calculateItemTotal()}
             </div>
         </div>
 
-        <DialogFooter>
-            <Button variant="outline" onClick={() => onOpenChange(false)} className="border-none text-[#756046] hover:text-[#402E24]">
-                Cancelar
-            </Button>
-            <Button onClick={handleConfirm} className="bg-[#402E24] text-white hover:bg-[#2b1f18]">
-                {initialItem ? "Actualizar Producto" : "Agregar al Pedido"}
-            </Button>
+        <DialogFooter className="p-6 bg-[#FAFAFA] border-t border-gray-100 flex-col sm:flex-row gap-3 items-center">
+             <div className="text-xl font-bold text-[#402E24] mr-auto">
+                Total: <span className="text-2xl">${calculateItemTotal()}</span>
+            </div>
+            <div className="flex gap-3 w-full sm:w-auto">
+                <Button variant="ghost" onClick={() => onOpenChange(false)} className="flex-1 sm:flex-none text-gray-500 hover:text-[#402E24]">
+                    Cancelar
+                </Button>
+                <Button onClick={handleConfirm} className="flex-1 sm:flex-none bg-[#402E24] text-white hover:bg-[#2b1f18] h-11 px-8 rounded-lg shadow-lg hover:shadow-xl transition-all active:scale-95">
+                    {initialItem ? "Actualizar" : "Agregar"}
+                </Button>
+            </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

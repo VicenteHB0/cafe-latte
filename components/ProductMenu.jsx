@@ -169,27 +169,35 @@ export function ProductMenu() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F0E0CD]">
+    <div className="min-h-screen bg-[#F5F5F5] font-sans">
       {/* Header */}
-        <div className="h-16 bg-[#756046] border-b border-[#A67C52] flex items-center px-4 justify-between shrink-0 sticky top-0 z-10">
-            <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" onClick={() => router.push('/menu')}>
-                    <ArrowLeft className="text-white" />
+        <div className="h-16 bg-[#402E24] shadow-md flex items-center px-6 justify-between shrink-0 sticky top-0 z-20">
+            <div className="flex items-center gap-4">
+                <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => router.push('/menu')}
+                    className="text-[#F5F5F5] hover:bg-white/10 hover:text-white transition-colors"
+                >
+                    <ArrowLeft />
                 </Button>
-                <h1 className="text-xl font-bold text-white">Menú de Productos</h1>
+                <div>
+                     <h1 className="text-xl font-bold text-white tracking-wide">Menú de Productos</h1>
+                     <p className="text-xs text-gray-300">Gestión de inventario y precios</p>
+                </div>
             </div>
-            <div className="flex items-center gap-3 w-[450px]">
+            <div className="flex items-center gap-3 w-full md:w-[500px]">
                 <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#756046]" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input 
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         placeholder="Buscar productos..." 
-                        className="pl-9 h-9 bg-[#F0E0CD] border-none focus-visible:ring-[#B68847] text-[#402E24]"
+                        className="pl-9 h-9 bg-white/10 border-none text-white placeholder:text-gray-400 focus-visible:ring-1 focus-visible:ring-white/30"
                     />
                 </div>
                 <Select value={availabilityFilter} onValueChange={setAvailabilityFilter}>
-                    <SelectTrigger className="w-[140px] h-9 bg-[#F0E0CD] border-none text-[#402E24] focus:ring-[#B68847]">
+                    <SelectTrigger className="w-[160px] h-9 bg-white/10 border-none text-white focus:ring-1 focus:ring-white/30 truncate">
                         <SelectValue placeholder="Estado" />
                     </SelectTrigger>
                     <SelectContent>
@@ -202,7 +210,7 @@ export function ProductMenu() {
         </div>
 
       {/* Tabs de categorías */}
-      <div className="bg-white px-2 py-2 shadow-sm shrink-0 items-center border-b border-[#A67C52]">
+      <div className="bg-white px-6 py-3 shadow-sm shrink-0 items-center border-b border-gray-100 sticky top-16 z-10">
             <ScrollArea className="w-full whitespace-nowrap">
                 <div className="flex w-max space-x-2 p-1">
                     {categories.map(category => (
@@ -211,33 +219,36 @@ export function ProductMenu() {
                             variant={activeCategory === category ? "default" : "outline"}
                             size="sm"
                             onClick={() => setActiveCategory(category)}
-                            className={`rounded-full ${activeCategory === category ? "bg-[#402E24]" : "text-[#756046] border-[#A67C52]"}`}
+                            className={`rounded-full px-4 transition-all duration-300 ${
+                                activeCategory === category 
+                                ? "bg-[#402E24] hover:bg-[#2b1f18] text-white shadow-md transform scale-105" 
+                                : "text-gray-600 border-gray-200 hover:border-[#402E24] hover:text-[#402E24] bg-transparent"
+                            }`}
                         >
                             {category}
                         </Button>
                     ))}
                 </div>
-                <ScrollBar orientation="horizontal" />
+                <ScrollBar orientation="horizontal" className="invisible" />
             </ScrollArea>
       </div>
 
       {/* Grid de productos */}
-      <ScrollArea className="flex-1 bg-[#F0E0CD]">
-        <div className="p-4 md:p-6 lg:p-8">
-            <div className="mb-4 flex items-center justify-between">
-                <p className="text-sm text-[#756046]">
-                    {filteredProducts.length} producto{filteredProducts.length !== 1 ? 's' : ''} encontrado{filteredProducts.length !== 1 ? 's' : ''}
+      <div className="flex-1 p-6 md:p-8 max-w-[1600px] mx-auto">
+            <div className="mb-6 flex items-center justify-between">
+                <p className="text-sm font-medium text-gray-500">
+                    Mostrando {filteredProducts.length} producto{filteredProducts.length !== 1 ? 's' : ''}
                 </p>
             </div>
 
             {loading ? (
-                <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {[...Array(8)].map((_, i) => (
                     <ProductSkeleton key={i} />
                     ))}
                 </div>
             ) : (
-                <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-6 pb-20">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20">
                 {/* Card para añadir producto */}
                 <AddProductCard onClick={handleCreateProduct} />
 
@@ -254,14 +265,18 @@ export function ProductMenu() {
             )}
 
             {!loading && filteredProducts.length === 0 && (
-            <div className="text-center py-12">
-                <p className="text-lg text-[#756046]">
-                No se encontraron productos
+            <div className="text-center py-20 bg-white rounded-xl shadow-sm border border-dashed border-gray-200">
+                <div className="text-6xl mb-4">☕</div>
+                <h3 className="text-xl font-bold text-[#402E24] mb-2">No se encontraron productos</h3>
+                <p className="text-gray-500 max-w-md mx-auto">
+                    Intenta ajustar tu búsqueda o crea un nuevo producto para comenzar.
                 </p>
+                <Button onClick={handleCreateProduct} className="mt-6 bg-[#402E24] text-white">
+                    Crear Nuevo Producto
+                </Button>
             </div>
             )}
-        </div>
-      </ScrollArea>
+      </div>
 
       {/* Dialog para Crear/Editar */}
       <ProductFormDialog 
@@ -273,17 +288,17 @@ export function ProductMenu() {
 
        {/* Alert Dialog para Eliminar */}
        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-white border-none shadow-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-[#402E24]">¿Estás absolutamente seguro?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta acción no se puede deshacer. Esto eliminará permanentemente el producto de la base de datos.
+            <AlertDialogTitle className="text-[#402E24] text-xl">¿Eliminar producto?</AlertDialogTitle>
+            <AlertDialogDescription className="text-gray-500">
+              Esta acción no se puede deshacer. El producto será eliminado permanentemente del menú y no podrá ser recuperado.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-[#A67C52] text-[#402E24]">Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700 text-white">
-              Eliminar
+            <AlertDialogCancel className="border-gray-200 text-gray-600 hover:text-[#402E24] hover:bg-gray-50">Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700 text-white shadow-md border-none">
+              Eliminar Permanentemente
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

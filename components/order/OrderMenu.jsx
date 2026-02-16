@@ -13,23 +13,24 @@ function ProductGridItem({ product, onClick }) {
     return (
         <Card 
             onClick={() => onClick(product)}
-            className="cursor-pointer hover:shadow-lg transition-all border-l-4 border-l-[#A67C52] hover:bg-[#F0E0CD] active:scale-95"
+            className="cursor-pointer bg-white border-none shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group overflow-hidden"
         >
+            <div className="h-2 bg-[#F5F5F5] group-hover:bg-[#A67C52] transition-colors w-full"></div>
             <CardContent className="p-4 flex flex-col h-full justify-between">
                 <div>
-                    <h3 className="font-bold text-[#402E24] line-clamp-1">{product.name}</h3>
-                    <p className="text-xs text-[#756046] line-clamp-2 mt-1">{product.description}</p>
+                    <h3 className="font-bold text-[#402E24] line-clamp-1 text-lg mb-1">{product.name}</h3>
+                    <p className="text-sm text-gray-500 line-clamp-2">{product.description}</p>
                 </div>
-                <div className="mt-3 flex justify-between items-center">
-                    <span className="font-bold text-[#402E24]">
+                <div className="mt-4 flex justify-between items-center">
+                    <span className="font-bold text-[#A67C52] text-lg">
                         ${product.price}
                     </span>
                     {product.available ? (
-                        <div className="bg-[#402E24] text-white rounded-full p-1 w-6 h-6 flex items-center justify-center">
-                            <Plus size={14} />
+                        <div className="bg-[#F5F5F5] text-[#402E24] group-hover:bg-[#402E24] group-hover:text-white rounded-full p-2 transition-colors">
+                            <Plus size={18} strokeWidth={2.5} />
                         </div>
                     ) : (
-                        <span className="text-xs text-red-500">Agotado</span>
+                        <span className="text-xs font-bold text-red-500 bg-red-50 px-2 py-1 rounded-full">Agotado</span>
                     )}
                 </div>
             </CardContent>
@@ -56,37 +57,41 @@ export function OrderMenu({
   });
 
   return (
-    <div className="flex flex-col h-full border-r border-[#A67C52]">
+    <div className="flex flex-col h-full border-r border-[#E5E5E5]">
         {/* Header */}
-        <div className="h-16 bg-[#756046] border-b border-[#A67C52] flex items-center px-4 justify-between shrink-0">
+        <div className="h-16 bg-[#402E24] shadow-md flex items-center px-4 justify-between shrink-0 z-10">
             <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" onClick={() => router.push('/menu')}>
-                    <ArrowLeft className="text-white" />
+                <Button variant="ghost" size="icon" onClick={() => router.push('/menu')} className="text-[#F5F5F5] hover:bg-white/10 hover:text-white">
+                    <ArrowLeft />
                 </Button>
-                <h1 className="text-xl font-bold text-white">Nueva Orden</h1>
+                <h1 className="text-xl font-bold text-white tracking-wide">Nueva Orden</h1>
             </div>
             <div className="w-1/3 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#756046]" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input 
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Buscar..." 
-                    className="pl-9 h-9 bg-[#F0E0CD] border-none text-[#402E24]"
+                    placeholder="Buscar producto..." 
+                    className="pl-9 h-10 bg-white/10 border-none text-white placeholder:text-gray-400 focus-visible:ring-1 focus-visible:ring-[#A67C52]"
                 />
             </div>
         </div>
 
         {/* Categories */}
-        <div className="bg-white px-2 py-2 shadow-sm shrink-0 items-center">
+        <div className="bg-white px-4 py-3 shadow-sm shrink-0 items-center z-0 border-b border-gray-100">
             <ScrollArea className="w-full whitespace-nowrap">
-                <div className="flex w-max space-x-2 p-1">
+                <div className="flex w-max space-x-2">
                     {categories.map(category => (
                         <Button
                             key={category}
-                            variant={activeCategory === category ? "default" : "outline"}
+                            variant={activeCategory === category ? "default" : "ghost"}
                             size="sm"
                             onClick={() => setActiveCategory(category)}
-                            className={`rounded-full ${activeCategory === category ? "bg-[#402E24]" : "text-[#756046] border-[#A67C52]"}`}
+                            className={`rounded-full px-4 font-medium transition-all ${
+                                activeCategory === category 
+                                ? "bg-[#402E24] text-white hover:bg-[#2b1f18] shadow-md" 
+                                : "text-[#756046] hover:bg-[#F5F5F5] hover:text-[#402E24]"
+                            }`}
                         >
                             {category}
                         </Button>
@@ -97,14 +102,14 @@ export function OrderMenu({
         </div>
 
         {/* Product Grid */}
-        <ScrollArea className="flex-1 min-h-0 bg-[#F0E0CD]">
-            <div className="p-4">
+        <ScrollArea className="flex-1 min-h-0 bg-[#F5F5F5]">
+            <div className="p-6">
                 {loading ? (
-                    <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4">
-                        {[...Array(8)].map((_, i) => <Skeleton key={i} className="h-32 rounded-xl" />)}
+                    <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-6">
+                        {[...Array(8)].map((_, i) => <Skeleton key={i} className="h-40 rounded-xl bg-gray-200" />)}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4 pb-20">
+                    <div className="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-6 pb-20">
                         {filteredProducts.map(product => (
                             <ProductGridItem 
                                 key={product._id} 
