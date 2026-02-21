@@ -32,6 +32,7 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
   const [sizeLabel, setSizeLabel] = useState('');
   const [sizePrice, setSizePrice] = useState('');
   const [flavorName, setFlavorName] = useState('');
+  const [flavorPrice, setFlavorPrice] = useState('');
   const [sauceName, setSauceName] = useState('');
 
   // Preview Product Object
@@ -64,9 +65,24 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
   useEffect(() => {
     if (open) {
         if (initialData) {
+            // Convertir sabores antiguos (strings) al nuevo formato (objetos)
+            const safeFlavors = (initialData.flavors || []).map(f => {
+                if (typeof f === 'string') {
+                    return { name: f, price: initialData.extraFlavorPrice || 0 };
+                }
+                return f;
+            });
+
             setFormData({
-                ...initialData,
-                price: initialData.price || undefined, // Asegurar undefined si es 0 o null
+                name: initialData.name || '',
+                category: initialData.category || 'Café',
+                description: initialData.description || '',
+                price: initialData.price || undefined,
+                available: initialData.available ?? true,
+                extras: initialData.extras || [],
+                sizes: initialData.sizes || [],
+                flavors: safeFlavors,
+                options: initialData.options || undefined,
                 image: initialData.image || '',
             });
         } else {
@@ -82,7 +98,6 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
                 extras: [],
                 sizes: [],
                 flavors: [],
-                extraFlavorPrice: undefined,
                 options: undefined
             });
         }
@@ -97,6 +112,26 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
     });
   }, [formData, initialData]);
 
+  const enforcePriceRules = (e) => {
+      let val = e.target.value;
+      if (val.startsWith('-')) {
+          e.target.value = val.replace('-', '');
+          val = e.target.value;
+      }
+      if (val.includes('.')) {
+          const parts = val.split('.');
+          if (parts[1].length > 2) {
+              e.target.value = `${parts[0]}.${parts[1].slice(0, 2)}`;
+          }
+      }
+  };
+
+  const preventInvalidKeys = (e) => {
+      if (['-', '+', 'e', 'E'].includes(e.key)) {
+          e.preventDefault();
+      }
+  };
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -110,12 +145,12 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
       available: formData.available ?? true,
     };
 
-    // Agregar campos según el tipo de producto
-    if (formData.price) cleanedData.price = formData.price;
-    if (formData.extras && formData.extras.length > 0) cleanedData.extras = formData.extras;
-    if (formData.sizes && formData.sizes.length > 0) cleanedData.sizes = formData.sizes;
-    if (formData.flavors && formData.flavors.length > 0) cleanedData.flavors = formData.flavors;
-    if (formData.extraFlavorPrice) cleanedData.extraFlavorPrice = formData.extraFlavorPrice;
+    // Agregar campos de arreglos siempre (incluso vacíos) para que MongoDB pueda sobrescribirlos y borrarlos
+    if (formData.price !== undefined && formData.price !== '' && formData.price !== null) cleanedData.price = formData.price;
+    cleanedData.extras = formData.extras || [];
+    cleanedData.sizes = formData.sizes || [];
+    cleanedData.flavors = formData.flavors || [];
+    
     if (formData.options) cleanedData.options = formData.options;
 
     // Si es edición, mantenemos el ID
@@ -186,9 +221,10 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
     if (flavorName) {
       setFormData({
         ...formData,
-        flavors: [...(formData.flavors || []), flavorName]
+        flavors: [...(formData.flavors || []), { name: flavorName, price: flavorPrice ? parseFloat(flavorPrice) : 0 }]
       });
       setFlavorName('');
+      setFlavorPrice('');
     }
   };
 
@@ -282,12 +318,11 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div className="space-y-2 flex flex-col">
-                                    <Label htmlFor="description" className="text-gray-700 font-medium">Descripción *</Label>
+                                    <Label htmlFor="description" className="text-gray-700 font-medium">Descripción (Opcional)</Label>
                                     <Textarea
                                     id="description"
                                     value={formData.description}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                    required
                                     className="flex-1 border-gray-200 focus:border-[#402E24] focus:ring-[#402E24]/10 bg-gray-50/50 resize-none min-h-[120px]"
                                     />
                                 </div>
@@ -331,8 +366,11 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
                                     <Input
                                     id="price"
                                     type="number"
+                                    min="0"
                                     step="0.01"
                                     value={formData.price || ''}
+                                    onKeyDown={preventInvalidKeys}
+                                    onInput={enforcePriceRules}
                                     onChange={(e) => setFormData({ ...formData, price: e.target.value ? parseFloat(e.target.value) : undefined })}
                                     placeholder="0.00"
                                     className="border-gray-200 focus:border-[#402E24] focus:ring-[#402E24]/10 bg-gray-50/50"
@@ -365,8 +403,11 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
                                     <Label className="text-xs font-semibold text-gray-500 uppercase">Precio</Label>
                                     <Input
                                         type="number"
+                                        min="0"
                                         step="0.01"
                                         value={sizePrice}
+                                        onKeyDown={preventInvalidKeys}
+                                        onInput={enforcePriceRules}
                                         onChange={(e) => setSizePrice(e.target.value)}
                                         placeholder="0.00"
                                         className="bg-white border-gray-200"
@@ -422,8 +463,11 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
                                         />
                                         <Input
                                             type="number"
+                                            min="0"
                                             step="0.01"
                                             value={extraPrice}
+                                            onKeyDown={preventInvalidKeys}
+                                            onInput={enforcePriceRules}
                                             onChange={(e) => setExtraPrice(e.target.value)}
                                             placeholder="$"
                                             className="w-20 bg-gray-50 border-gray-200"
@@ -443,7 +487,7 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
                                 </div>
 
                                     {/* Sabores */}
-                                <div className="space-y-3">
+                                <div className="space-y-3 flex flex-col">
                                     <Label className="text-gray-700 font-medium">Sabores</Label>
                                     <div className="flex gap-2">
                                         <Input
@@ -452,28 +496,29 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
                                             placeholder="Sabor"
                                             className="flex-1 bg-gray-50 border-gray-200"
                                         />
+                                        <Input
+                                            type="number"
+                                            min="0"
+                                            step="0.01"
+                                            value={flavorPrice}
+                                            onKeyDown={preventInvalidKeys}
+                                            onInput={enforcePriceRules}
+                                            onChange={(e) => setFlavorPrice(e.target.value)}
+                                            placeholder="$"
+                                            className="w-20 bg-gray-50 border-gray-200"
+                                        />
                                         <Button type="button" onClick={addFlavor} size="icon" className="bg-gray-200 hover:bg-gray-300 text-gray-700 shrink-0">
                                             <Plus className="w-4 h-4" />
                                         </Button>
                                     </div>
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
                                         {formData.flavors?.map((flavor, idx) => (
-                                            <div key={idx} className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-gray-100 text-xs font-medium text-gray-600">
-                                                {flavor}
-                                                <X className="w-3 h-3 cursor-pointer hover:text-red-500" onClick={() => removeFlavor(idx)} />
+                                            <div key={idx} className="flex justify-between items-center px-3 py-2 rounded bg-gray-50 text-sm">
+                                                <span>{flavor.name} {flavor.price > 0 && `(+$${flavor.price})`}</span>
+                                                <X className="w-3.5 h-3.5 text-gray-400 cursor-pointer hover:text-red-500" onClick={() => removeFlavor(idx)} />
                                             </div>
                                         ))}
                                     </div>
-                                    {formData.flavors?.length > 0 && (
-                                            <Input
-                                            type="number"
-                                            step="0.01"
-                                            value={formData.extraFlavorPrice || ''}
-                                            onChange={(e) => setFormData({ ...formData, extraFlavorPrice: e.target.value ? parseFloat(e.target.value) : undefined })}
-                                            placeholder="Precio extra por sabor"
-                                            className="bg-gray-50 border-gray-200 text-sm"
-                                        />
-                                    )}
                                 </div>
                             </div>
                         </div>

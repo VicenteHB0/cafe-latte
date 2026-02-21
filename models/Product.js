@@ -37,7 +37,15 @@ const ProductSchema = new mongoose.Schema({
       price: Number,
     }
   ],
-  flavors: [String],
+  flavors: [
+    {
+      name: String,
+      price: {
+        type: Number,
+        default: 0
+      }
+    }
+  ],
   options: {
     pieces: Number,
     sauces: [String],
@@ -46,4 +54,9 @@ const ProductSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-export default mongoose.models.Product || mongoose.model('Product', ProductSchema, 'menuProducts');
+// Para evitar problemas de caché con Next.js Hot Reloading
+if (mongoose.models.Product) {
+  delete mongoose.models.Product;
+}
+
+export default mongoose.model('Product', ProductSchema, 'menuProducts');

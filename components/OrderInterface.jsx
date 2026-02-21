@@ -110,7 +110,7 @@ export function OrderInterface({ initialOrder = null }) {
         const size2 = newItem.size?.label || null;
         if (size1 !== size2) return false;
         
-        // Compare Arrays (Flavors, Sauces, Customizations)
+        // Compare Strings Arrays (Sauces, Customizations)
         const compareArrays = (arr1, arr2) => {
             const a1 = arr1 || [];
             const a2 = arr2 || [];
@@ -120,7 +120,6 @@ export function OrderInterface({ initialOrder = null }) {
             return sorted1.every((val, index) => val === sorted2[index]);
         };
 
-        if (!compareArrays(item.flavors, newItem.flavors)) return false;
         if (!compareArrays(item.sauces, newItem.sauces)) return false;
         if (!compareArrays(item.customizations, newItem.customizations)) return false;
 
@@ -131,6 +130,14 @@ export function OrderInterface({ initialOrder = null }) {
         const sortedExtras1 = [...extras1].map(e => e.name).sort();
         const sortedExtras2 = [...extras2].map(e => e.name).sort();
         if (!sortedExtras1.every((val, index) => val === sortedExtras2[index])) return false;
+
+        // Compare Flavors (Array of objects, compare by name)
+        const flavors1 = item.flavors || [];
+        const flavors2 = newItem.flavors || [];
+        if (flavors1.length !== flavors2.length) return false;
+        const sortedFlavors1 = [...flavors1].map(e => typeof e === 'object' ? e.name : e).sort();
+        const sortedFlavors2 = [...flavors2].map(e => typeof e === 'object' ? e.name : e).sort();
+        if (!sortedFlavors1.every((val, index) => val === sortedFlavors2[index])) return false;
 
         return true;
       });

@@ -56,10 +56,18 @@ export function OrderCart({
                                         {/* Modifiers */}
                                         <div className="mt-1 space-y-1">
                                             {item.size && <div className="text-xs text-gray-500 font-medium">Tamaño: {item.size.label}</div>}
-                                            {item.flavors?.length > 0 && <div className="text-xs text-gray-500">Sabor: {item.flavors.join(', ')}</div>}
+                                            {item.flavors?.length > 0 && (
+                                                <div className="text-xs text-gray-500 flex flex-wrap gap-1">
+                                                    Sabor: {item.flavors.map((f, i) => (
+                                                        <span key={i} className="font-medium">
+                                                            {f.name || f}{f.price ? ` (+$${f.price})` : ''}{i < item.flavors.length - 1 ? ', ' : ''}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
                                             {item.sauces?.length > 0 && <div className="text-xs text-gray-500">Salsas: {item.sauces.join(', ')}</div>}
                                             {item.extras?.map((extra, i) => (
-                                                <div key={i} className="text-xs text-[#A67C52]">+ {extra.name}</div>
+                                                <div key={i} className="text-xs text-[#A67C52]">+ {extra.name} + (${extra.price})</div>
                                             ))}
                                             {item.customizations?.map((note, i) => (
                                                 <div key={i} className="text-xs text-gray-400 italic">"{note}"</div>

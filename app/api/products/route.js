@@ -55,7 +55,8 @@ export async function PUT(request) {
 
         return NextResponse.json(product);
     } catch (error) {
-        return NextResponse.json({ error: error.message }, { status: 400 });
+        console.error("PUT Error:", error);
+        return NextResponse.json({ error: error.message, details: error }, { status: 400 });
     }
 }
 

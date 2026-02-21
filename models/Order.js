@@ -41,6 +41,13 @@ const OrderSchema = new mongoose.Schema({
           price: Number,
         }
       ],
+      flavors: [
+        {
+          name: String,
+          price: Number,
+        }
+      ],
+      sauces: [String],
       customizations: [String], // e.g. "Sin hielo", "Extra caliente"
     }
   ],
@@ -66,4 +73,9 @@ const OrderSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-export default mongoose.models.Order || mongoose.model('Order', OrderSchema);
+// Para evitar problemas de caché con Next.js Hot Reloading
+if (mongoose.models.Order) {
+  delete mongoose.models.Order;
+}
+
+export default mongoose.model('Order', OrderSchema);

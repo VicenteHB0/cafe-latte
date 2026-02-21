@@ -69,9 +69,8 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder, in
     selectedExtras.forEach(extra => {
       price += extra.price;
     });
-    if (product.extraFlavorPrice && selectedFlavor) {
-         // Logic if flavors have price, though schema puts price on extras. 
-         // Assuming flavors are free for now unless specified otherwise or if they are in 'extras'
+    if (selectedFlavor && selectedFlavor.price) {
+         price += selectedFlavor.price;
     }
     return price * quantity;
   };
@@ -170,22 +169,23 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder, in
         <div className="space-y-3">
           <Label className="text-[#402E24] text-sm font-bold uppercase tracking-wider">Sabor <span className="text-red-500">*</span></Label>
           <RadioGroup
-            value={selectedFlavor}
-            onValueChange={setSelectedFlavor}
+            value={selectedFlavor?.name}
+            onValueChange={(val) => setSelectedFlavor(product.flavors.find(f => f.name === val))}
             className="grid grid-cols-2 gap-3"
           >
             {product.flavors.map((flavor) => (
-              <div key={flavor}>
+              <div key={flavor.name}>
                 <RadioGroupItem
-                  value={flavor}
-                  id={`flavor-${flavor}`}
+                  value={flavor.name}
+                  id={`flavor-${flavor.name}`}
                   className="peer sr-only"
                 />
                 <Label
-                  htmlFor={`flavor-${flavor}`}
+                  htmlFor={`flavor-${flavor.name}`}
                   className="flex flex-col items-center justify-center rounded-xl border-2 border-gray-100 bg-white p-3 hover:bg-[#F5F5F5] hover:border-[#A67C52]/50 peer-data-[state=checked]:border-[#402E24] peer-data-[state=checked]:bg-[#402E24] peer-data-[state=checked]:text-white cursor-pointer transition-all duration-200 text-center h-full shadow-sm"
                 >
-                  <span className="font-medium text-sm">{flavor}</span>
+                  <span className="font-medium text-sm">{flavor.name}</span>
+                  {flavor.price > 0 && <span className="text-xs opacity-80 mt-1">+${flavor.price}</span>}
                 </Label>
               </div>
             ))}

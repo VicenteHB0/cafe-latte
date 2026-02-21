@@ -543,7 +543,15 @@ function EditOrderModal({ order, open, onOpenChange, onSave }) {
                                         {/* Modifiers */}
                                         <div className="mt-2 pl-9 space-y-1">
                                             {item.size && <div className="text-xs text-gray-500 font-medium">Tamaño: {item.size.label}</div>}
-                                            {item.flavors?.length > 0 && <div className="text-xs text-gray-500">Sabor: {item.flavors.join(', ')}</div>}
+                                            {item.flavors?.length > 0 && (
+                                                <div className="text-xs text-gray-500 flex flex-wrap gap-1">
+                                                    Sabor: {item.flavors.map((f, i) => (
+                                                        <span key={i} className="font-medium">
+                                                            {f.name || f}{f.price ? ` (+$${f.price})` : ''}{i < item.flavors.length - 1 ? ', ' : ''}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
                                             {item.sauces?.length > 0 && <div className="text-xs text-gray-500">Salsas: {item.sauces.join(', ')}</div>}
                                             {item.extras?.map((extra, i) => (
                                                 <div key={i} className="text-xs text-[#A67C52] font-medium">+ {extra.name}</div>
@@ -623,7 +631,7 @@ function OrderCard({ order, status, onUpdateStatus, onDelete, onEdit }) {
                  status === 'ready' ? 'bg-green-500' : 'bg-gray-300'
              }`}></div>
 
-            <CardHeader className="p-4 pb-2 pl-5 space-y-0">
+            <CardHeader>
                 <div className="flex justify-between items-start">
                     <div>
                          <div className="flex items-baseline gap-2">
@@ -664,7 +672,7 @@ function OrderCard({ order, status, onUpdateStatus, onDelete, onEdit }) {
 
             <Popover>
                 <PopoverTrigger asChild>
-                    <CardContent className="p-4 pt-2 pl-5 cursor-pointer hover:bg-gray-50/50 transition-colors">
+                    <CardContent className="cursor-pointer hover:bg-gray-50/50 transition-colors">
                         {/* Items Preview */}
                         <div className="space-y-1.5">
                             {order.items.slice(0, 3).map((item, idx) => (
@@ -703,10 +711,18 @@ function OrderCard({ order, status, onUpdateStatus, onDelete, onEdit }) {
                                     </div>
                                     <div className="pl-9 mt-1 space-y-1">
                                         {item.size && <div className="text-xs text-gray-500 bg-white inline-block px-1.5 rounded border border-gray-100 mr-1">{item.size.label}</div>}
-                                        {item.flavors?.length > 0 && <div className="text-xs text-gray-500">Sabor: {item.flavors.join(', ')}</div>}
+                                        {item.flavors?.length > 0 && (
+                                            <div className="text-xs text-gray-500 flex flex-wrap gap-1">
+                                                Sabor: {item.flavors.map((f, i) => (
+                                                    <span key={i} className="font-medium bg-gray-100 px-1.5 rounded mr-1">
+                                                        {f.name || f}{f.price ? ` (+$${f.price})` : ''}{i < item.flavors.length - 1 ? ', ' : ''}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
                                         {item.sauces?.length > 0 && <div className="text-xs text-gray-500">Salsas: {item.sauces.join(', ')}</div>}
                                         {item.extras?.map((extra, i) => (
-                                            <div key={i} className="text-xs text-[#A67C52] font-medium">+ {extra.name}</div>
+                                            <div key={i} className="text-xs text-[#A67C52] font-medium">+ {extra.name} + (${extra.price})</div>
                                         ))}
                                         {item.customizations?.map((note, i) => (
                                             <div key={i} className="text-xs text-gray-400 italic bg-yellow-50 p-1.5 rounded-md mt-1">"{note}"</div>

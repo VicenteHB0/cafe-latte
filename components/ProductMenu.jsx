@@ -133,17 +133,23 @@ export function ProductMenu() {
         if (res.ok) {
             const savedProduct = await res.json();
             if (method === 'POST') {
-                setProducts([...products, savedProduct]);
-                toast.success("Producto creado", { description: `${savedProduct.name} ha sido agregado al menú.` });
+                setProducts([...products.filter(Boolean), savedProduct]);
+                toast.success("Producto creado", { description: `${savedProduct?.name || 'Nuevo porducto'} ha sido agregado al menú.` });
             } else {
-                setProducts(products.map(p => p._id === savedProduct._id ? savedProduct : p));
-                toast.success("Producto actualizado", { description: `${savedProduct.name} ha sido modificado exitosamente.` });
+                if (!savedProduct || !savedProduct._id) {
+                    console.error("DEBUG: savedProduct is undefined or has no _id!", savedProduct);
+                    toast.error("Error", { description: "Hubo un problema actualizando el estado local. Refresca la página." });
+                } else {
+                    setProducts(products.filter(Boolean).map(p => p?._id === savedProduct?._id ? savedProduct : p));
+                    toast.success("Producto actualizado", { description: `${savedProduct?.name || 'El producto'} ha sido modificado exitosamente.` });
+                }
             }
             setIsDialogOpen(false);
             setEditingProduct(null);
         } else {
-            console.error('Error saving product');
-            toast.error("Error al guardar", { description: "No se pudo guardar el producto. Inténtalo de nuevo." });
+            const data = await res.json().catch(() => ({}));
+            console.error('Error saving product:', data);
+            toast.error("Error al guardar", { description: data.error || "No se pudo guardar el producto. Inténtalo de nuevo." });
         }
     } catch (error) {
        console.error('Error saving product:', error);
