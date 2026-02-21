@@ -7,7 +7,8 @@ export const authConfig = {
         const isLoggedIn = !!auth?.user;
         const isOnDashboard = nextUrl.nextUrl.pathname.startsWith('/menu') || 
                               nextUrl.nextUrl.pathname.startsWith('/orders') || 
-                              nextUrl.nextUrl.pathname.startsWith('/admin');
+                              nextUrl.nextUrl.pathname.startsWith('/admin') ||
+                              nextUrl.nextUrl.pathname.startsWith('/products');
         
         if (isOnDashboard) {
           if (isLoggedIn) return true;
