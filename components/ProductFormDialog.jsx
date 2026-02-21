@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, ImagePlus, Trash2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +16,7 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
     category: 'Café',
     description: '',
     price: undefined,
+    image: '',
 
     available: true,
     extras: [],
@@ -36,6 +37,29 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
   // Preview Product Object
   const [previewProduct, setPreviewProduct] = useState({});
 
+  // Dynamic Categories
+  const [dbCategories, setDbCategories] = useState([]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [open]); // Refresh categories when dialog opens
+
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch('/api/categories');
+      if (res.ok) {
+        const data = await res.json();
+        setDbCategories(data);
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
+  const dynamicCategories = dbCategories.length > 0 
+    ? dbCategories.map(c => c.name) 
+    : ['Café', 'Té', 'Bebida Fría', 'Comida', 'Postre', 'Otro']; // Fallback inicial
+
   // Cargar datos iniciales si existen (Modo Edición)
   useEffect(() => {
     if (open) {
@@ -43,6 +67,7 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
             setFormData({
                 ...initialData,
                 price: initialData.price || undefined, // Asegurar undefined si es 0 o null
+                image: initialData.image || '',
             });
         } else {
             // Resetear si es nuevo producto
@@ -51,6 +76,7 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
                 category: 'Café',
                 description: '',
                 price: undefined,
+                image: '',
 
                 available: true,
                 extras: [],
@@ -80,7 +106,7 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
       name: formData.name || '',
       category: formData.category || 'Café',
       description: formData.description || '',
-
+      image: formData.image || '',
       available: formData.available ?? true,
     };
 
@@ -99,6 +125,25 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
 
     onSubmit(cleanedData);
     onOpenChange(false);
+  };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        alert("La imagen es demasiado grande. El tamaño máximo es 5MB.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData({ ...formData, image: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setFormData({ ...formData, image: '' });
   };
 
   const addExtra = () => {
@@ -180,7 +225,10 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
   return (
 
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[95vw] md:max-w-[90vw] lg:max-w-7xl w-full h-[90vh] flex flex-col p-0 gap-0 bg-white border-none shadow-2xl overflow-hidden">
+        <DialogContent 
+          onOpenAutoFocus={(e) => e.preventDefault()}
+          className="sm:max-w-[95vw] md:max-w-[90vw] lg:max-w-7xl w-full h-[90vh] flex flex-col p-0 gap-0 bg-white border-none shadow-2xl overflow-hidden"
+        >
           <DialogHeader className="p-6 pb-4 border-b border-gray-100 bg-white">
             <DialogTitle className="text-2xl font-bold text-[#402E24] tracking-tight">
                 {initialData ? 'Editar Producto' : 'Nuevo Producto'}
@@ -224,26 +272,57 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
                                             <SelectValue placeholder="Selecciona una categoría" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="Café">Café</SelectItem>
-                                            <SelectItem value="Té">Té</SelectItem>
-                                            <SelectItem value="Bebida Fría">Bebida Fría</SelectItem>
-                                            <SelectItem value="Comida">Comida</SelectItem>
-                                            <SelectItem value="Postre">Postre</SelectItem>
-                                            <SelectItem value="Otro">Otro</SelectItem>
+                                            {dynamicCategories.map((cat) => (
+                                                <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                                            ))}
                                         </SelectContent>
                                     </Select>
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="description" className="text-gray-700 font-medium">Descripción *</Label>
-                                <Textarea
-                                id="description"
-                                value={formData.description}
-                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                required
-                                className="border-gray-200 focus:border-[#402E24] focus:ring-[#402E24]/10 bg-gray-50/50 resize-none min-h-[80px]"
-                                />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div className="space-y-2 flex flex-col">
+                                    <Label htmlFor="description" className="text-gray-700 font-medium">Descripción *</Label>
+                                    <Textarea
+                                    id="description"
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                    required
+                                    className="flex-1 border-gray-200 focus:border-[#402E24] focus:ring-[#402E24]/10 bg-gray-50/50 resize-none min-h-[120px]"
+                                    />
+                                </div>
+
+                                <div className="space-y-3">
+                                    <Label className="text-gray-700 font-medium">Imagen (Opcional)</Label>
+                                    {formData.image ? (
+                                        <div className="relative w-full h-full min-h-[120px] max-h-[120px] rounded-xl border border-gray-200 overflow-hidden bg-white flex items-center justify-center group shadow-sm">
+                                            <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
+                                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
+                                                <Button type="button" variant="destructive" size="sm" onClick={removeImage} className="gap-2 shadow-xl">
+                                                    <Trash2 className="w-4 h-4" /> Eliminar
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="relative w-full h-full min-h-[120px] max-h-[120px] rounded-xl border-2 border-dashed border-gray-300 hover:border-[#A67C52] bg-gray-50/50 hover:bg-[#F0E0CD]/10 transition-all flex flex-col items-center justify-center cursor-pointer overflow-hidden group">
+                                            <input 
+                                                type="file" 
+                                                accept="image/*" 
+                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
+                                                onChange={handleImageUpload}
+                                            />
+                                            <div className="flex flex-col items-center space-y-1 text-gray-500 group-hover:text-[#A67C52] transition-colors transform group-hover:scale-105 duration-300 p-2">
+                                                <div className="p-2 bg-white rounded-full shadow-sm group-hover:shadow-md transition-shadow">
+                                                    <ImagePlus className="w-5 h-5 text-[#A67C52]" />
+                                                </div>
+                                                <div className="text-center">
+                                                    <span className="text-xs font-bold block">Clic para subir imagen</span>
+                                                    <span className="text-[10px] text-gray-400">PNG, JPG h/5MB</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                             <div className="grid grid-cols-1 gap-5">

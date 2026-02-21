@@ -12,6 +12,8 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import { Settings } from 'lucide-react';
+import { CategoryManager } from './CategoryManager';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -60,10 +62,25 @@ export function ProductMenu() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
+  const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
+  const [dbCategories, setDbCategories] = useState([]);
 
   useEffect(() => {
     fetchProducts();
+    fetchCategories();
   }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch('/api/categories');
+      if (res.ok) {
+        const data = await res.json();
+        setDbCategories(data);
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -79,8 +96,12 @@ export function ProductMenu() {
     }
   };
 
-  // Obtener categorías únicas
-  const categories = ['Todos', ...Array.from(new Set(products.map(p => p.category)))];
+  // Obtener categorías directamente de la DB, usar un fallback si está vacío
+  const dynamicCategories = dbCategories.length > 0 
+    ? dbCategories.map(c => c.name) 
+    : ['Café', 'Té', 'Bebida Fría', 'Comida', 'Postre', 'Otro']; // Fallback inicial
+
+  const categories = ['Todos', ...dynamicCategories];
 
   // Filtrar productos
   const filteredProducts = products.filter(product => {
@@ -210,8 +231,8 @@ export function ProductMenu() {
         </div>
 
       {/* Tabs de categorías */}
-      <div className="bg-white px-6 py-3 shadow-sm shrink-0 items-center border-b border-gray-100 sticky top-16 z-10">
-            <ScrollArea className="w-full whitespace-nowrap">
+      <div className="bg-white px-6 py-3 shadow-sm shrink-0 items-center border-b border-gray-100 sticky top-16 z-10 flex justify-between gap-4">
+            <ScrollArea className="flex-1 whitespace-nowrap">
                 <div className="flex w-max space-x-2 p-1">
                     {categories.map(category => (
                         <Button
@@ -231,6 +252,16 @@ export function ProductMenu() {
                 </div>
                 <ScrollBar orientation="horizontal" className="invisible" />
             </ScrollArea>
+            <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setIsCategoryManagerOpen(true)}
+                className="shrink-0 border-gray-200 text-gray-600 hover:text-[#402E24] hover:border-[#402E24] bg-gray-50 flex items-center gap-2"
+                title="Gestionar Categorías"
+            >
+                <Settings className="w-4 h-4" />
+                <span className="hidden sm:inline">Categorías</span>
+            </Button>
       </div>
 
       {/* Grid de productos */}
@@ -303,6 +334,15 @@ export function ProductMenu() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Gestor de Categorías */}
+      <CategoryManager 
+        open={isCategoryManagerOpen} 
+        onOpenChange={(open) => {
+            setIsCategoryManagerOpen(open);
+            if (!open) fetchCategories(); // Refrescar listado al cerrar por si hubo cambios
+        }} 
+      />
     </div>
   );
 }

@@ -8,7 +8,18 @@ export function ProductCard({ product, onEdit, onDelete, hideActions }) {
 
     <Card className="overflow-hidden border-none shadow-sm hover:shadow-xl transition-all duration-300 group bg-white rounded-xl flex flex-col h-full">
       {/* Imagen */}
-      <div className="h-2 bg-[#402E24] w-full" />
+      {product.image ? (
+        <div className="w-full h-48 overflow-hidden relative">
+          <img 
+            src={product.image} 
+            alt={product.name} 
+            className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" 
+          />
+          <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors duration-300 pointer-events-none" />
+        </div>
+      ) : (
+        <div className="h-2 bg-[#402E24] w-full" />
+      )}
 
 
       <CardHeader className="p-5 pb-2">
