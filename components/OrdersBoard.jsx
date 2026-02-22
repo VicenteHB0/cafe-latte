@@ -24,7 +24,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 const COLUMN_CONFIG = {
   pending: {
     title: 'Nuevas',
@@ -61,6 +62,7 @@ export function OrdersBoard() {
   const [loading, setLoading] = useState(true);
   const eventSourceRef = useRef(null);
   const router = useRouter();
+
 
   // Deletion State
   const [orderToDelete, setOrderToDelete] = useState(null);
@@ -221,7 +223,7 @@ export function OrdersBoard() {
 
 
   const getColumns = () => {
-    const columns = {
+    const rawColumns = {
         pending: [],
         preparing: [],
         ready: [],
@@ -229,12 +231,16 @@ export function OrdersBoard() {
     };
 
     orders.forEach(order => {
-        if (columns[order.status]) {
-            columns[order.status].push(order);
+        if (rawColumns[order.status]) {
+            rawColumns[order.status].push(order);
         }
     });
+
+    for (const key in rawColumns) {
+        rawColumns[key].sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
     
-    return columns;
+    return rawColumns;
   };
 
   const columns = getColumns();
@@ -244,8 +250,8 @@ export function OrdersBoard() {
   return (
     <div className="h-screen flex flex-col bg-[#F5F5F5] overflow-hidden font-sans">
         {/* Header Consistente */}
-        <div className="h-16 bg-[#402E24] shadow-md flex items-center px-6 justify-between shrink-0 z-10">
-            <div className="flex items-center gap-4">
+        <div className="h-16 bg-[#402E24] shadow-md flex items-center px-4 md:px-6 justify-between shrink-0 z-10 w-full overflow-x-auto no-scrollbar">
+            <div className="flex items-center gap-2 md:gap-4 shrink-0">
                 <Button 
                     variant="ghost" 
                     size="icon" 
@@ -254,24 +260,20 @@ export function OrdersBoard() {
                 >
                     <ArrowLeft />
                 </Button>
-                <div>
+                <div className="hidden sm:block whitespace-nowrap">
                      <h1 className="text-xl font-bold text-white tracking-wide">Panel de Órdenes</h1>
                      <p className="text-xs text-gray-300">Gestión de cocina en tiempo real</p>
                 </div>
             </div>
-             {/* <div className="flex items-center gap-2">
-                 <div className="flex items-center gap-1.5 px-3 py-1 bg-white/10 rounded-full text-xs text-white/90">
-                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                    En línea
-                 </div>
-            </div> */}
+
         </div>
 
-        <div className="flex-1 grid grid-cols-4 gap-6 min-h-0 p-6">
+        {/* Desktop View: Grid */}
+        <div className="hidden lg:grid flex-1 grid-cols-4 gap-6 min-h-0 p-6">
             {Object.keys(COLUMN_CONFIG).map(status => {
                 const config = COLUMN_CONFIG[status];
                 const Icon = config.icon;
-                const matches = columns[status] || [];
+                const columnOrders = columns[status] || [];
 
                 return (
                     <div key={status} className="flex flex-col h-full bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -285,13 +287,13 @@ export function OrdersBoard() {
                                 </h2>
                             </div>
                             <span className="bg-white px-2.5 py-0.5 rounded-full text-sm font-bold text-gray-600 shadow-sm border border-gray-100">
-                                {matches.length}
+                                {columnOrders.length}
                             </span>
                         </div>
                         
                         <ScrollArea className="flex-1 min-h-0 bg-[#FAFAFA]">
-                            <div className="p-4 space-y-4">
-                                {matches.map(order => (
+                            <div className="p-4 relative space-y-4">
+                                {columnOrders.map(order => (
                                     <OrderCard 
                                         key={order._id} 
                                         order={order} 
@@ -301,11 +303,79 @@ export function OrdersBoard() {
                                         onEdit={() => handleEditClick(order)}
                                     />
                                 ))}
+                                {columnOrders.length === 0 && (
+                                    <div className="text-center text-gray-400 py-10">
+                                        Sin órdenes en esta columna
+                                    </div>
+                                )}
                             </div>
                         </ScrollArea>
                     </div>
                 );
             })}
+        </div>
+
+        {/* Mobile View: Tabs */}
+        <div className="flex lg:hidden flex-1 min-h-0 p-4">
+            <Tabs defaultValue="pending" className="flex flex-col flex-1 w-full h-full min-h-0">
+                <TabsList className="w-full bg-gray-100 border border-gray-200 p-1.5 mb-4 h-auto flex shadow-inner rounded-xl">
+                    {Object.keys(COLUMN_CONFIG).map(status => {
+                        const config = COLUMN_CONFIG[status];
+                        const Icon = config.icon;
+                        const matchCount = (columns[status]?.length || 0);
+                        return (
+                            <TabsTrigger 
+                                key={status} 
+                                value={status}
+                                className="flex-1 min-w-0 py-2.5 px-0.5 flex flex-col items-center gap-1 rounded-lg transition-all duration-300 data-[state=active]:bg-[#402E24] data-[state=active]:shadow-md data-[state=active]:text-white text-gray-500 hover:text-gray-700"
+                            >
+                                <div className="flex items-center gap-1.5 min-w-0">
+                                  <Icon size={16} className="shrink-0" />
+                                  <span className="truncate text-[9px] sm:text-[11px] font-bold uppercase tracking-wider">{config.title}</span>
+                                </div>
+                                {matchCount > 0 && (
+                                    <span className="bg-[#F0E0CD] text-[#402E24] px-2 py-0.5 rounded-full text-[10px] font-bold shadow-sm">
+                                        {matchCount}
+                                    </span>
+                                )}
+                            </TabsTrigger>
+                        );
+                    })}
+                </TabsList>
+
+                {Object.keys(COLUMN_CONFIG).map(status => {
+                    const config = COLUMN_CONFIG[status];
+                    const columnOrders = columns[status] || [];
+                    return (
+                        <TabsContent key={status} value={status} className="flex-1 min-h-0 m-0 outline-none flex flex-col h-full bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                            <div className={`p-3 border-b border-gray-100 shrink-0 ${status === 'pending' ? 'bg-yellow-50' : status === 'preparing' ? 'bg-blue-50' : status === 'ready' ? 'bg-green-50' : 'bg-gray-50'}`}>
+                                <h3 className={`font-bold text-center ${config.textColor}`}>
+                                    {config.title} ({columnOrders.length})
+                                </h3>
+                            </div>
+                            <ScrollArea className="flex-1 min-h-0 bg-[#FAFAFA]">
+                                <div className="p-4 relative space-y-4">
+                                    {columnOrders.map(order => (
+                                        <OrderCard 
+                                            key={order._id} 
+                                            order={order} 
+                                            status={status}
+                                            onUpdateStatus={updateStatus}
+                                            onDelete={() => handleDeleteClick(order)}
+                                            onEdit={() => handleEditClick(order)}
+                                        />
+                                    ))}
+                                    {columnOrders.length === 0 && (
+                                        <div className="text-center text-gray-400 py-10">
+                                            Sin órdenes en esta columna
+                                        </div>
+                                    )}
+                                </div>
+                            </ScrollArea>
+                        </TabsContent>
+                    );
+                })}
+            </Tabs>
         </div>
 
         {/* Delete Dialog */}
@@ -609,11 +679,6 @@ function EditOrderModal({ order, open, onOpenChange, onSave }) {
     );
 }
 
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 
 // ... (EditOrderModal remains unchanged)
 
@@ -690,7 +755,7 @@ function OrderCard({ order, status, onUpdateStatus, onDelete, onEdit }) {
                     </CardContent>
                 </PopoverTrigger>
                 <PopoverContent 
-                    className="w-80 p-0 bg-white border-none shadow-xl rounded-xl overflow-hidden" 
+                    className="w-[var(--radix-popover-trigger-width)] p-0 bg-white border-none shadow-xl rounded-xl overflow-hidden" 
                     align="start" 
                     sideOffset={5}
                 >
@@ -698,7 +763,7 @@ function OrderCard({ order, status, onUpdateStatus, onDelete, onEdit }) {
                          <span className="font-bold">Orden #{order.orderNumber}</span>
                          <span className="text-white/80 text-sm">Detalle completo</span>
                     </div>
-                    <ScrollArea className="h-[320px] bg-[#FAFAFA]">
+                    <ScrollArea className="max-h-[320px] h-auto bg-[#FAFAFA]">
                         <div className="p-4 space-y-4">
                             {order.items.map((item, idx) => (
                                 <div key={idx} className="text-sm border-b border-gray-100 last:border-0 pb-3 last:pb-0">
@@ -710,11 +775,11 @@ function OrderCard({ order, status, onUpdateStatus, onDelete, onEdit }) {
                                         <span className="text-gray-500 font-medium">${item.price * item.quantity}</span>
                                     </div>
                                     <div className="pl-9 mt-1 space-y-1">
-                                        {item.size && <div className="text-xs text-gray-500 bg-white inline-block px-1.5 rounded border border-gray-100 mr-1">{item.size.label}</div>}
+                                        {item.size && <div>Tamaño: <div className="text-xs text-gray-500 bg-white inline-block px-1.5 rounded border border-gray-100 mr-1">{item.size.label}</div></div>}
                                         {item.flavors?.length > 0 && (
                                             <div className="text-xs text-gray-500 flex flex-wrap gap-1">
                                                 Sabor: {item.flavors.map((f, i) => (
-                                                    <span key={i} className="font-medium bg-gray-100 px-1.5 rounded mr-1">
+                                                    <span key={i} className="font-medium bg-white inline-block px-1.5 rounded border border-gray-100 mr-1">
                                                         {f.name || f}{f.price ? ` (+$${f.price})` : ''}{i < item.flavors.length - 1 ? ', ' : ''}
                                                     </span>
                                                 ))}
