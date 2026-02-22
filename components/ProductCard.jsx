@@ -22,10 +22,10 @@ export function ProductCard({ product, onEdit, onDelete, hideActions }) {
       )}
 
 
-      <CardHeader className="p-5 pb-2">
-            <div className="flex justify-between items-start gap-2">
+      <CardHeader >
+            <div className="flex justify-between items-start">
                 <div>
-                     <CardDescription className="text-xs text-[#A67C52] font-bold uppercase tracking-wider mb-1">
+                     <CardDescription className="text-xs text-[#A67C52] font-bold uppercase tracking-wider">
                         {product.category}
                     </CardDescription>
                     <CardTitle className="text-xl font-bold text-[#402E24] leading-tight group-hover:text-[#A67C52] transition-colors">
@@ -40,7 +40,7 @@ export function ProductCard({ product, onEdit, onDelete, hideActions }) {
             </div>
       </CardHeader>
 
-      <CardContent className="p-5 pt-2 flex-grow space-y-4">
+      <CardContent className="flex-grow">
         {/* Descripción */}
         <p className="text-sm text-gray-500 line-clamp-2">
           {product.description || "Sin descripción"}
