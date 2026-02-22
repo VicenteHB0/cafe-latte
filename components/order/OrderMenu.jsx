@@ -1,36 +1,63 @@
 "use client";
 
-import { Search, ArrowLeft } from 'lucide-react';
+import { Search, ArrowLeft, Image as ImageIcon, Plus } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 function ProductGridItem({ product, onClick }) {
     return (
         <Card 
             onClick={() => onClick(product)}
-            className="cursor-pointer bg-white border-none shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group overflow-hidden"
+            className="cursor-pointer bg-white border-none shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group overflow-hidden flex flex-col"
         >
-            <div className="h-2 bg-[#F5F5F5] group-hover:bg-[#A67C52] transition-colors w-full"></div>
-            <CardContent className="p-4 flex flex-col h-full justify-between">
-                <div>
-                    <h3 className="font-bold text-[#402E24] line-clamp-1 text-lg mb-1">{product.name}</h3>
-                    <p className="text-sm text-gray-500 line-clamp-2">{product.description}</p>
+            {/* Image Section */}
+            <div className="relative w-full aspect-[4/3] bg-gray-100 overflow-hidden">
+                {product.image ? (
+                    <img 
+                        src={product.image} 
+                        alt={product.name} 
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-[#F5F5F5] text-gray-400 group-hover:bg-[#EAEAEA] transition-colors">
+                        <ImageIcon size={48} strokeWidth={1} className="opacity-50" />
+                    </div>
+                )}
+                
+                {/* Available Badge Overlay */}
+                {!product.available && (
+                    <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] flex items-center justify-center z-10">
+                        <span className="text-sm font-bold text-red-600 bg-white px-3 py-1.5 rounded-full shadow-md border border-red-100">
+                            Agotado
+                        </span>
+                    </div>
+                )}
+                
+                {/* Category Tag Overlay */}
+                <div className="absolute top-3 left-3 z-10">
+                    <span className="bg-white/95 backdrop-blur-sm text-[#402E24] text-xs font-bold px-2.5 py-1.5 rounded-md shadow-sm border border-gray-100/50">
+                        {product.category}
+                    </span>
                 </div>
-                <div className="mt-4 flex justify-between items-center">
-                    <span className="font-bold text-[#A67C52] text-lg">
+            </div>
+
+            <CardContent className="p-4 flex flex-col flex-1 justify-between border-t border-gray-50 bg-white">
+                <div>
+                    <h3 className="font-bold text-[#402E24] line-clamp-1 text-lg mb-1 group-hover:text-[#A67C52] transition-colors">{product.name}</h3>
+                    <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">{product.description || "Sin descripción"}</p>
+                </div>
+                <div className="mt-4 flex justify-between items-end">
+                    <span className="font-bold text-[#402E24] text-xl">
                         ${product.price}
                     </span>
-                    {product.available ? (
-                        <div className="bg-[#F5F5F5] text-[#402E24] group-hover:bg-[#402E24] group-hover:text-white rounded-full p-2 transition-colors">
-                            <Plus size={18} strokeWidth={2.5} />
+                    {product.available && (
+                        <div className="bg-[#F5F5F5] text-[#402E24] group-hover:bg-[#402E24] group-hover:text-white rounded-full p-2.5 transition-all duration-300 shadow-sm group-hover:shadow-md transform group-hover:scale-105">
+                            <Plus size={20} strokeWidth={2.5} />
                         </div>
-                    ) : (
-                        <span className="text-xs font-bold text-red-500 bg-red-50 px-2 py-1 rounded-full">Agotado</span>
                     )}
                 </div>
             </CardContent>
