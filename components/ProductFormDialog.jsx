@@ -29,6 +29,7 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
   // Estados para inputs temporales
   const [extraName, setExtraName] = useState('');
   const [extraPrice, setExtraPrice] = useState('');
+  const [extraAllowQuantity, setExtraAllowQuantity] = useState(false);
   const [sizeLabel, setSizeLabel] = useState('');
   const [sizePrice, setSizePrice] = useState('');
   const [flavorName, setFlavorName] = useState('');
@@ -185,10 +186,11 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
     if (extraName && extraPrice) {
       setFormData({
         ...formData,
-        extras: [...(formData.extras || []), { name: extraName, price: parseFloat(extraPrice) }]
+        extras: [...(formData.extras || []), { name: extraName, price: parseFloat(extraPrice), allowQuantity: extraAllowQuantity }]
       });
       setExtraName('');
       setExtraPrice('');
+      setExtraAllowQuantity(false);
     }
   };
 
@@ -472,6 +474,14 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
                                             placeholder="$"
                                             className="w-20 bg-gray-50 border-gray-200"
                                         />
+                                        <div className="flex items-center gap-1.5 px-1">
+                                            <Switch
+                                                checked={extraAllowQuantity}
+                                                onCheckedChange={setExtraAllowQuantity}
+                                                className="data-[state=checked]:bg-[#402E24] scale-90"
+                                            />
+                                            <Label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider leading-none">Múltiple</Label>
+                                        </div>
                                         <Button type="button" onClick={addExtra} size="icon" className="bg-gray-200 hover:bg-gray-300 text-gray-700 shrink-0">
                                             <Plus className="w-4 h-4" />
                                         </Button>
@@ -479,7 +489,7 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
                                     <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
                                         {formData.extras?.map((extra, idx) => (
                                             <div key={idx} className="flex justify-between items-center px-3 py-2 rounded bg-gray-50 text-sm">
-                                                <span>{extra.name} (+${extra.price})</span>
+                                                <span>{extra.name} (+${extra.price}) {extra.allowQuantity && <span className="text-[10px] font-bold text-[#A67C52] ml-1 uppercase">(xN)</span>}</span>
                                                 <X className="w-3.5 h-3.5 text-gray-400 cursor-pointer hover:text-red-500" onClick={() => removeExtra(idx)} />
                                             </div>
                                         ))}

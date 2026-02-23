@@ -14,7 +14,7 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder, in
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedExtras, setSelectedExtras] = useState([]);
-  const [selectedFlavor, setSelectedFlavor] = useState(null); 
+  const [selectedFlavors, setSelectedFlavors] = useState([]); 
   const [selectedSauce, setSelectedSauce] = useState(null); // Changed to single value
   const [notes, setNotes] = useState('');
 
@@ -26,7 +26,7 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder, in
             setQuantity(initialItem.quantity || 1);
             setSelectedSize(initialItem.size || (product.sizes?.length > 0 ? product.sizes[0] : null));
             setSelectedExtras(initialItem.extras || []);
-            setSelectedFlavor(initialItem.flavors?.[0] || null);
+            setSelectedFlavors(initialItem.flavors || []);
             setSelectedSauce(initialItem.sauces?.[0] || null);
             setNotes(initialItem.customizations?.[0] || '');
         } else {
@@ -35,7 +35,7 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder, in
             // Default to first size if available, otherwise null (standard price)
             setSelectedSize(product.sizes?.length > 0 ? product.sizes[0] : null);
             setSelectedExtras([]);
-            setSelectedFlavor(null);
+            setSelectedFlavors([]);
             setSelectedSauce(null);
             setNotes('');
         }
@@ -48,13 +48,29 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder, in
     setQuantity(prev => Math.max(1, prev + delta));
   };
 
-  const toggleExtra = (extra) => {
+  const updateExtraQuantity = (extra, delta) => {
     setSelectedExtras(current => {
       const exists = current.find(e => e.name === extra.name);
       if (exists) {
-        return current.filter(e => e.name !== extra.name);
+        const newQuantity = Math.max(0, (exists.quantity || 1) + delta);
+        if (newQuantity === 0) {
+          return current.filter(e => e.name !== extra.name);
+        }
+        return current.map(e => e.name === extra.name ? { ...e, quantity: newQuantity } : e);
+      } else if (delta > 0) {
+        return [...current, { ...extra, quantity: 1 }];
+      }
+      return current;
+    });
+  };
+
+  const toggleFlavor = (flavor) => {
+    setSelectedFlavors(current => {
+      const exists = current.find(f => f.name === flavor.name);
+      if (exists) {
+        return current.filter(f => f.name !== flavor.name);
       } else {
-        return [...current, extra];
+        return [...current, flavor];
       }
     });
   };
@@ -67,18 +83,18 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder, in
   const calculateItemTotal = () => {
     let price = (selectedSize ? selectedSize.price : product.price) || 0;
     selectedExtras.forEach(extra => {
-      price += extra.price;
+      price += extra.price * (extra.quantity || 1);
     });
-    if (selectedFlavor && selectedFlavor.price) {
-         price += selectedFlavor.price;
-    }
+    selectedFlavors.forEach(flavor => {
+        if (flavor.price) price += flavor.price;
+    });
     return price * quantity;
   };
 
   const handleConfirm = () => {
     // Validation
-    if (product.flavors && product.flavors.length > 0 && !selectedFlavor) {
-        toast.error("Por favor selecciona un sabor."); 
+    if (product.flavors && product.flavors.length > 0 && selectedFlavors.length === 0) {
+        toast.error("Por favor selecciona al menos un sabor."); 
         return;
     }
 
@@ -94,7 +110,7 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder, in
       price: calculateItemTotal() / quantity, // Unit price with modifiers
       size: selectedSize,
       extras: selectedExtras,
-      flavors: selectedFlavor ? [selectedFlavor] : [],
+      flavors: selectedFlavors,
       sauces: selectedSauce ? [selectedSauce] : [],
       customizations: notes ? [notes] : [],
     };
@@ -141,22 +157,49 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder, in
             {product.extras && product.extras.length > 0 && (
                 <div className="space-y-3">
                     <Label className="text-[#402E24] text-sm font-bold uppercase tracking-wider">Extras</Label>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {product.extras.map((extra) => {
-                            const isSelected = selectedExtras.some(e => e.name === extra.name);
+                            const selectedExtra = selectedExtras.find(e => e.name === extra.name);
+                            const extraQty = selectedExtra?.quantity || 0;
+                            const isSelected = extraQty > 0;
                             return (
                                 <div 
                                     key={extra.name}
-                                    onClick={() => toggleExtra(extra)}
+                                    onClick={!extra.allowQuantity ? () => updateExtraQuantity(extra, isSelected ? -1 : 1) : undefined}
                                     className={`
-                                        cursor-pointer rounded-xl border-2 p-3 transition-all duration-200 flex justify-between items-center shadow-sm
+                                        rounded-xl border-2 p-3 transition-all duration-200 flex flex-col justify-center shadow-sm
+                                        ${!extra.allowQuantity ? 'cursor-pointer' : ''}
                                         ${isSelected 
-                                            ? 'border-[#402E24] bg-[#402E24] text-white shadow-md' 
+                                            ? 'border-[#402E24] bg-white text-[#402E24] shadow-md' 
                                             : 'border-gray-100 bg-white hover:bg-[#F5F5F5] hover:border-[#A67C52]/50 text-gray-600'}
                                     `}
                                 >
-                                    <span className="font-medium text-sm">{extra.name}</span>
-                                    <span className="text-xs opacity-90 font-bold">+${extra.price}</span>
+                                    <div className={`flex justify-between items-center ${extra.allowQuantity ? 'mb-2' : ''}`}>
+                                        <span className={`font-medium text-sm ${isSelected ? 'text-[#402E24]' : ''}`}>{extra.name}</span>
+                                        <span className={`text-xs font-bold ${isSelected ? 'opacity-100' : 'opacity-80'}`}>+${extra.price}</span>
+                                    </div>
+                                    {extra.allowQuantity && (
+                                    <div className="flex justify-between items-center bg-gray-50 rounded-lg p-1 border border-gray-100">
+                                        <Button 
+                                            variant="ghost" 
+                                            size="icon" 
+                                            className="h-8 w-8 hover:bg-white text-gray-500 rounded-md"
+                                            onClick={(e) => { e.stopPropagation(); updateExtraQuantity(extra, -1); }}
+                                            disabled={extraQty === 0}
+                                        >
+                                            -
+                                        </Button>
+                                        <span className="font-bold w-6 text-center text-[#402E24]">{extraQty}</span>
+                                        <Button 
+                                            variant="ghost" 
+                                            size="icon" 
+                                            className="h-8 w-8 hover:bg-white text-[#402E24] rounded-md"
+                                            onClick={(e) => { e.stopPropagation(); updateExtraQuantity(extra, 1); }}
+                                        >
+                                            +
+                                        </Button>
+                                    </div>
+                                    )}
                                 </div>
                             );
                         })}
@@ -167,29 +210,23 @@ export function AddToOrderDialog({ open, onOpenChange, product, onAddToOrder, in
              {/* Flavors */}
              {product.flavors && product.flavors.length > 0 && (
         <div className="space-y-3">
-          <Label className="text-[#402E24] text-sm font-bold uppercase tracking-wider">Sabor <span className="text-red-500">*</span></Label>
-          <RadioGroup
-            value={selectedFlavor?.name}
-            onValueChange={(val) => setSelectedFlavor(product.flavors.find(f => f.name === val))}
-            className="grid grid-cols-2 gap-3"
-          >
-            {product.flavors.map((flavor) => (
-              <div key={flavor.name}>
-                <RadioGroupItem
-                  value={flavor.name}
-                  id={`flavor-${flavor.name}`}
-                  className="peer sr-only"
-                />
-                <Label
-                  htmlFor={`flavor-${flavor.name}`}
-                  className="flex flex-col items-center justify-center rounded-xl border-2 border-gray-100 bg-white p-3 hover:bg-[#F5F5F5] hover:border-[#A67C52]/50 peer-data-[state=checked]:border-[#402E24] peer-data-[state=checked]:bg-[#402E24] peer-data-[state=checked]:text-white cursor-pointer transition-all duration-200 text-center h-full shadow-sm"
-                >
-                  <span className="font-medium text-sm">{flavor.name}</span>
-                  {flavor.price > 0 && <span className="text-xs opacity-80 mt-1">+${flavor.price}</span>}
-                </Label>
-              </div>
-            ))}
-          </RadioGroup>
+          <Label className="text-[#402E24] text-sm font-bold uppercase tracking-wider">Sabor(es) <span className="text-red-500">*</span></Label>
+          <div className="grid grid-cols-2 gap-3">
+            {product.flavors.map((flavor) => {
+              const isSelected = selectedFlavors.some(f => f.name === flavor.name);
+              return (
+                <div key={flavor.name} onClick={() => toggleFlavor(flavor)}>
+                  <div
+                    className={`flex flex-col items-center justify-center rounded-xl border-2 p-3 cursor-pointer transition-all duration-200 text-center h-full shadow-sm
+                      ${isSelected ? 'border-[#402E24] bg-[#402E24] text-white shadow-md' : 'border-gray-100 bg-white hover:bg-[#F5F5F5] hover:border-[#A67C52]/50 text-gray-700'}`}
+                  >
+                    <span className="font-medium text-sm">{flavor.name}</span>
+                    {flavor.price > 0 && <span className={`text-xs mt-1 ${isSelected ? 'opacity-90' : 'opacity-60'}`}>+${flavor.price}</span>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
             )}
 

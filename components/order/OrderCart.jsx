@@ -67,7 +67,7 @@ export function OrderCart({
                                             )}
                                             {item.sauces?.length > 0 && <div className="text-xs text-gray-500">Salsas: {item.sauces.join(', ')}</div>}
                                             {item.extras?.map((extra, i) => (
-                                                <div key={i} className="text-xs text-[#A67C52]">+ {extra.name} + (${extra.price})</div>
+                                                <div key={i} className="text-xs text-[#A67C52]">+ {extra.quantity || 1}x {extra.name} (${extra.price})</div>
                                             ))}
                                             {item.customizations?.map((note, i) => (
                                                 <div key={i} className="text-xs text-gray-400 italic">"{note}"</div>

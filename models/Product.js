@@ -35,6 +35,10 @@ const ProductSchema = new mongoose.Schema({
     {
       name: String,
       price: Number,
+      allowQuantity: {
+        type: Boolean,
+        default: false
+      }
     }
   ],
   flavors: [

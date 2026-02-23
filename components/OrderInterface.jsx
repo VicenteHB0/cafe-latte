@@ -123,12 +123,12 @@ export function OrderInterface({ initialOrder = null }) {
         if (!compareArrays(item.sauces, newItem.sauces)) return false;
         if (!compareArrays(item.customizations, newItem.customizations)) return false;
 
-        // Compare Extras (Array of objects, compare by name)
+        // Compare Extras (Array of objects, compare by name and quantity)
         const extras1 = item.extras || [];
         const extras2 = newItem.extras || [];
         if (extras1.length !== extras2.length) return false;
-        const sortedExtras1 = [...extras1].map(e => e.name).sort();
-        const sortedExtras2 = [...extras2].map(e => e.name).sort();
+        const sortedExtras1 = [...extras1].map(e => `${e.name}-${e.quantity || 1}`).sort();
+        const sortedExtras2 = [...extras2].map(e => `${e.name}-${e.quantity || 1}`).sort();
         if (!sortedExtras1.every((val, index) => val === sortedExtras2[index])) return false;
 
         // Compare Flavors (Array of objects, compare by name)

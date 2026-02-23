@@ -39,6 +39,14 @@ const OrderSchema = new mongoose.Schema({
         {
           name: String,
           price: Number,
+          quantity: {
+            type: Number,
+            default: 1
+          },
+          allowQuantity: {
+            type: Boolean,
+            default: false
+          }
         }
       ],
       flavors: [
