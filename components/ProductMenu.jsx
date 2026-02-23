@@ -167,6 +167,16 @@ export function ProductMenu() {
     setIsDialogOpen(true);
   };
 
+  const handleCloneProduct = (product) => {
+    // Extract everything except MongoDB and internal fields we don't want copied
+    const { _id, createdAt, updatedAt, __v, ...clonedData } = product;
+    setEditingProduct({
+        ...clonedData,
+        name: `${clonedData.name} (Copia)`
+    });
+    setIsDialogOpen(true);
+  };
+
   const handleDeleteClick = (id) => {
     setProductToDelete(id);
     setIsDeleteDialogOpen(true);
@@ -295,6 +305,7 @@ export function ProductMenu() {
                     key={product._id}
                     product={product}
                     onEdit={() => handleEditProduct(product)}
+                    onClone={() => handleCloneProduct(product)}
                     onDelete={() => handleDeleteClick(product._id)}
                     />
                 ))}

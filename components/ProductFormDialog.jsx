@@ -269,10 +269,10 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
         >
           <DialogHeader className="p-6 pb-4 border-b border-gray-100 bg-white">
             <DialogTitle className="text-2xl font-bold text-[#402E24] tracking-tight">
-                {initialData ? 'Editar Producto' : 'Nuevo Producto'}
+                {initialData?._id ? 'Editar Producto' : (initialData ? `Clonar Producto` : 'Nuevo Producto')}
             </DialogTitle>
             <DialogDescription className="text-gray-500">
-                {initialData ? 'Modifica los detalles del producto.' : 'Completa los detalles para añadir un nuevo producto al menú.'}
+                {initialData?._id ? 'Modifica los detalles del producto.' : 'Completa los detalles para añadir un nuevo producto al menú.'}
             </DialogDescription>
           </DialogHeader>
           
@@ -577,7 +577,7 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
                Cancelar
              </Button>
              <Button type="submit" form="product-form" className="bg-[#402E24] hover:bg-[#2b1f18] text-white px-8 shadow-lg">
-               {initialData ? 'Guardar Cambios' : 'Crear Producto'}
+               {initialData?._id ? 'Guardar Cambios' : 'Crear Producto'}
              </Button>
            </DialogFooter>
         </DialogContent>

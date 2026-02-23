@@ -1,9 +1,9 @@
-import { Edit2, Trash2 } from 'lucide-react';
+import { Edit2, Trash2, Copy } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-export function ProductCard({ product, onEdit, onDelete, hideActions }) {
+export function ProductCard({ product, onEdit, onDelete, onClone, hideActions }) {
   return (
 
     <Card className="overflow-hidden border-none shadow-sm hover:shadow-xl transition-all duration-300 group bg-white rounded-xl flex flex-col h-full">
@@ -73,7 +73,16 @@ export function ProductCard({ product, onEdit, onDelete, hideActions }) {
       </CardContent>
 
       {!hideActions && (
-        <CardFooter className="p-4 bg-gray-50 border-t border-gray-100 gap-3 mt-auto">
+        <CardFooter className="p-4 bg-gray-50 border-t border-gray-100 gap-3 mt-auto flex-wrap">
+            <Button
+              onClick={() => onClone?.(product)}
+              variant="outline"
+              size="icon"
+              className="border-gray-200 text-gray-700 hover:text-[#402E24] hover:border-[#402E24] hover:bg-white transition-all shadow-sm h-9 w-9"
+              title="Clonar Producto"
+            >
+              <Copy className="w-4 h-4" />
+            </Button>
             <Button
               onClick={() => onEdit?.(product)}
               variant="outline"
