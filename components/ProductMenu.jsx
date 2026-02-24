@@ -208,23 +208,23 @@ export function ProductMenu() {
   return (
     <div className="min-h-screen bg-[#F5F5F5] font-sans">
       {/* Header */}
-        <div className="h-16 bg-[#402E24] shadow-md flex items-center px-6 justify-between shrink-0 sticky top-0 z-20">
-            <div className="flex items-center gap-4">
+        <div className="bg-[#402E24] shadow-md flex flex-col sm:flex-row items-start sm:items-center px-4 sm:px-6 py-4 sm:h-16 justify-between gap-4 shrink-0 sticky top-0 z-20">
+            <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
                 <Button 
                     variant="ghost" 
                     size="icon" 
                     onClick={() => router.push('/menu')}
-                    className="text-[#F5F5F5] hover:bg-white/10 hover:text-white transition-colors"
+                    className="text-[#F5F5F5] hover:bg-white/10 hover:text-white transition-colors shrink-0"
                 >
                     <ArrowLeft />
                 </Button>
-                <div>
-                     <h1 className="text-xl font-bold text-white tracking-wide">Menú de Productos</h1>
-                     <p className="text-xs text-gray-300">Gestión de inventario y precios</p>
+                <div className="min-w-0">
+                     <h1 className="text-lg sm:text-xl font-bold text-white tracking-wide truncate">Menú de Productos</h1>
+                     <p className="text-xs text-gray-300 truncate">Gestión de inventario y precios</p>
                 </div>
             </div>
-            <div className="flex items-center gap-3 w-full md:w-[500px]">
-                <div className="relative flex-1">
+            <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto md:w-[500px]">
+                <div className="relative flex-1 min-w-0">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input 
                         value={searchTerm}
@@ -234,7 +234,7 @@ export function ProductMenu() {
                     />
                 </div>
                 <Select value={availabilityFilter} onValueChange={setAvailabilityFilter}>
-                    <SelectTrigger className="w-[160px] h-9 bg-white/10 border-none text-white focus:ring-1 focus:ring-white/30 truncate">
+                    <SelectTrigger className="w-[120px] sm:w-[160px] h-9 bg-white/10 border-none text-white focus:ring-1 focus:ring-white/30 shrink-0">
                         <SelectValue placeholder="Estado" />
                     </SelectTrigger>
                     <SelectContent>
