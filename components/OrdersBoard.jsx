@@ -14,6 +14,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { format, isSameDay, startOfDay, endOfDay } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { Calendar } from "@/components/ui/calendar";
+import { CalendarIcon } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -62,6 +66,12 @@ export function OrdersBoard() {
   const [loading, setLoading] = useState(true);
   const eventSourceRef = useRef(null);
   const router = useRouter();
+
+  // Date Filter State
+  const [dateFilter, setDateFilter] = useState({
+    from: undefined,
+    to: undefined,
+  });
 
 
   // Deletion State
@@ -231,7 +241,23 @@ export function OrdersBoard() {
     };
 
     orders.forEach(order => {
-        if (rawColumns[order.status]) {
+        const orderDate = new Date(order.createdAt);
+        let includeOrder = true;
+
+        if (dateFilter?.from) {
+            if (dateFilter.to) {
+                includeOrder = orderDate >= startOfDay(dateFilter.from) && orderDate <= endOfDay(dateFilter.to);
+            } else {
+                includeOrder = isSameDay(orderDate, dateFilter.from);
+            }
+        } else {
+            // Default behavior: active always shown, completed only today
+            if (order.status === 'completed') {
+                includeOrder = isSameDay(orderDate, new Date());
+            }
+        }
+
+        if (includeOrder && rawColumns[order.status]) {
             rawColumns[order.status].push(order);
         }
     });
@@ -250,8 +276,8 @@ export function OrdersBoard() {
   return (
     <div className="h-screen flex flex-col bg-[#F5F5F5] overflow-hidden font-sans">
         {/* Header Consistente */}
-        <div className="bg-[#402E24] shadow-md flex items-center px-4 py-4 sm:h-16 justify-between shrink-0 z-10 w-full">
-            <div className="flex items-center gap-3 w-full min-w-0">
+        <div className="bg-[#402E24] shadow-md flex items-center px-4 py-4 sm:h-16 justify-between shrink-0 z-10 w-full flex-wrap gap-4">
+            <div className="flex items-center gap-3 min-w-0">
                 <Button 
                     variant="ghost" 
                     size="icon" 
@@ -264,6 +290,56 @@ export function OrdersBoard() {
                      <h1 className="text-lg sm:text-xl font-bold text-white tracking-wide truncate">Panel de Órdenes</h1>
                      <p className="text-xs text-gray-300 truncate">Gestión de cocina en tiempo real</p>
                 </div>
+            </div>
+
+            <div className="flex items-center">
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button
+                            variant="outline"
+                            className={`w-[260px] justify-start text-left font-normal bg-white/10 border-none text-white hover:bg-white/20 hover:text-white ${
+                                !dateFilter?.from && "text-white/70"
+                            }`}
+                        >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {dateFilter?.from ? (
+                                dateFilter.to ? (
+                                    <>
+                                        {format(dateFilter.from, "LLL dd, y", { locale: es })} -{" "}
+                                        {format(dateFilter.to, "LLL dd, y", { locale: es })}
+                                    </>
+                                ) : (
+                                    format(dateFilter.from, "LLL dd, y", { locale: es })
+                                )
+                            ) : (
+                                <span>Filtrar por fecha</span>
+                            )}
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 bg-white" align="end">
+                        <Calendar
+                            initialFocus
+                            mode="range"
+                            defaultMonth={dateFilter?.from}
+                            selected={dateFilter}
+                            onSelect={setDateFilter}
+                            numberOfMonths={1}
+                            locale={es}
+                        />
+                         {dateFilter?.from && (
+                             <div className="p-3 border-t border-gray-100 flex justify-end">
+                                 <Button 
+                                     variant="ghost" 
+                                     size="sm" 
+                                     onClick={() => setDateFilter({ from: undefined, to: undefined })}
+                                     className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                                  >
+                                     Limpiar Filtro
+                                 </Button>
+                             </div>
+                         )}
+                    </PopoverContent>
+                </Popover>
             </div>
         </div>
 
@@ -283,6 +359,11 @@ export function OrdersBoard() {
                                 </div>
                                 <h2 className={`font-bold text-lg ${config.textColor}`}>
                                     {config.title}
+                                    {status === 'completed' && (
+                                        <span className="text-sm font-normal ml-2 opacity-80 capitalize">
+                                            {dateFilter?.from ? (dateFilter.to && !isSameDay(dateFilter.from, dateFilter.to) ? `${format(dateFilter.from, "d 'de' MMMM 'de' yyyy", {locale: es})} - ${format(dateFilter.to, "d 'de' MMMM 'de' yyyy", {locale: es})}` : format(dateFilter.from, "d 'de' MMMM 'de' yyyy", {locale: es})) : format(new Date(), "d 'de' MMMM 'de' yyyy", {locale: es})}
+                                        </span>
+                                    )}
                                 </h2>
                             </div>
                             <span className="bg-white px-2.5 py-0.5 rounded-full text-sm font-bold text-gray-600 shadow-sm border border-gray-100">
@@ -330,7 +411,14 @@ export function OrdersBoard() {
                             >
                                 <div className="flex items-center gap-1.5 relative">
                                   <Icon size={14} className="shrink-0" />
-                                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">{config.title}</span>
+                                  <span className="truncate text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">
+                                      {config.title}
+                                      {status === 'completed' && (
+                                        <span className="opacity-80 normal-case ml-1">
+                                            ({dateFilter?.from ? (dateFilter.to && !isSameDay(dateFilter.from, dateFilter.to) ? `${format(dateFilter.from, "dd/MM/yyyy")} - ${format(dateFilter.to, "dd/MM/yyyy")}` : format(dateFilter.from, "dd/MM/yyyy")) : format(new Date(), "dd/MM/yyyy")})
+                                        </span>
+                                      )}
+                                  </span>
                                   {matchCount > 0 && (
                                       <span className="ml-1 bg-[#F0E0CD] text-[#402E24] px-1.5 py-0.5 rounded-full text-[9px] font-bold shadow-sm">
                                           {matchCount}
@@ -348,8 +436,16 @@ export function OrdersBoard() {
                     return (
                         <TabsContent key={status} value={status} className="flex-1 min-h-0 m-0 outline-none flex flex-col h-full bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                             <div className={`p-3 border-b border-gray-100 shrink-0 ${config.color}`}>
-                                <h3 className={`font-bold text-center ${config.textColor}`}>
-                                    {config.title} ({columnOrders.length})
+                                <h3 className={`font-bold text-center flex items-center justify-center gap-2 ${config.textColor}`}>
+                                    <span>
+                                        {config.title}
+                                        {status === 'completed' && (
+                                            <span className="text-sm font-normal ml-2 opacity-80 capitalize">
+                                                {dateFilter?.from ? (dateFilter.to && !isSameDay(dateFilter.from, dateFilter.to) ? `${format(dateFilter.from, "d 'de' MMMM 'de' yyyy", {locale: es})} - ${format(dateFilter.to, "d 'de' MMMM 'de' yyyy", {locale: es})}` : format(dateFilter.from, "d 'de' MMMM 'de' yyyy", {locale: es})) : format(new Date(), "d 'de' MMMM 'de' yyyy", {locale: es})}
+                                            </span>
+                                        )}
+                                    </span>
+                                    <span>({columnOrders.length})</span>
                                 </h3>
                             </div>
                             <ScrollArea className="flex-1 min-h-0 bg-[#FAFAFA]">
