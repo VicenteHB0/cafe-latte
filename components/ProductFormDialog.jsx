@@ -265,9 +265,9 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent 
           onOpenAutoFocus={(e) => e.preventDefault()}
-          className="sm:max-w-[95vw] md:max-w-[90vw] lg:max-w-7xl w-full h-[90vh] flex flex-col p-0 gap-0 bg-white border-none shadow-2xl overflow-hidden"
+          className="max-sm:!fixed max-sm:!inset-0 max-sm:!w-screen max-sm:!h-[100dvh] max-sm:!max-w-none max-sm:!translate-x-0 max-sm:!translate-y-0 sm:max-w-[95vw] sm:h-[90vh] md:max-w-[90vw] lg:max-w-7xl flex flex-col p-0 gap-0 bg-white border-none rounded-none sm:rounded-2xl shadow-2xl overflow-hidden m-0"
         >
-          <DialogHeader className="p-6 pb-4 border-b border-gray-100 bg-white">
+          <DialogHeader className="p-4 sm:p-6 pb-3 sm:pb-4 border-b border-gray-100 bg-white">
             <DialogTitle className="text-2xl font-bold text-[#402E24] tracking-tight">
                 {initialData?._id ? 'Editar Producto' : (initialData ? `Clonar Producto` : 'Nuevo Producto')}
             </DialogTitle>
@@ -279,7 +279,7 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
           <div className="flex-1 overflow-hidden flex flex-col lg:flex-row">
               <div className="flex-1 h-full min-w-0">
                 <ScrollArea className="h-full">
-                    <div className="p-6 pt-6">
+                    <div className="p-4 sm:p-6 pt-5 sm:pt-6">
                         <form id="product-form" onSubmit={handleSubmit} className="space-y-8 pb-10">
                         {/* Información básica */}
                         <div className="space-y-5">
@@ -288,18 +288,19 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
                                 <h3 className="font-bold text-gray-800 text-lg">Información General</h3>
                             </div>
                             
-                            <div className="grid grid-cols-2 gap-5">
-                                <div className="space-y-2">
-                                    <Label htmlFor="name" className="text-gray-700 font-medium">Nombre del Producto *</Label>
-                                    <Input
-                                    id="name"
-                                    value={formData.name}
-                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    required
-                                    className="border-gray-200 focus:border-[#402E24] focus:ring-[#402E24]/10 bg-gray-50/50"
-                                    placeholder="Ej: Latte Vainilla"
-                                    />
-                                </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="name" className="text-gray-700 font-medium">Nombre del Producto *</Label>
+                                <Input
+                                id="name"
+                                value={formData.name}
+                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                required
+                                className="border-gray-200 focus:border-[#402E24] focus:ring-[#402E24]/10 bg-gray-50/50"
+                                placeholder="Ej: Latte Vainilla"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 <div className="space-y-2">
                                     <Label htmlFor="category" className="text-gray-700 font-medium">Categoría *</Label>
                                     <Select
@@ -315,6 +316,22 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
                                             ))}
                                         </SelectContent>
                                     </Select>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="price" className="text-gray-700 font-medium">Precio Base ($) *</Label>
+                                    <Input
+                                    id="price"
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    value={formData.price ?? ''}
+                                    onKeyDown={preventInvalidKeys}
+                                    onInput={enforcePriceRules}
+                                    required
+                                    onChange={(e) => setFormData({ ...formData, price: e.target.value === '' ? '' : parseFloat(e.target.value) })}
+                                    placeholder="0.00"
+                                    className="border-gray-200 focus:border-[#402E24] focus:ring-[#402E24]/10 bg-gray-50/50"
+                                    />
                                 </div>
                             </div>
 
@@ -361,25 +378,6 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
                                     )}
                                 </div>
                             </div>
-
-                            <div className="grid grid-cols-1 gap-5">
-                                <div className="space-y-2">
-                                    <Label htmlFor="price" className="text-gray-700 font-medium">Precio Base ($)</Label>
-                                    <Input
-                                    id="price"
-                                    type="number"
-                                    min="0"
-                                    step="0.01"
-                                    value={formData.price || ''}
-                                    onKeyDown={preventInvalidKeys}
-                                    onInput={enforcePriceRules}
-                                    onChange={(e) => setFormData({ ...formData, price: e.target.value ? parseFloat(e.target.value) : undefined })}
-                                    placeholder="0.00"
-                                    className="border-gray-200 focus:border-[#402E24] focus:ring-[#402E24]/10 bg-gray-50/50"
-                                    />
-                                    <p className="text-xs text-gray-400">Dejar vacío si el precio depende del tamaño.</p>
-                                </div>
-                            </div>
                         </div>
 
                         <div className="h-px bg-gray-100 w-full" />
@@ -391,8 +389,8 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
                                 <h3 className="font-bold text-gray-800 text-lg">Tamaños y Precios</h3>
                             </div>
 
-                            <div className="flex gap-3 items-end p-4 bg-gray-50 rounded-xl border border-gray-100">
-                                <div className="flex-1 space-y-2">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 p-4 bg-gray-50 rounded-xl border border-gray-100 items-end">
+                                <div className="space-y-2">
                                     <Label className="text-xs font-semibold text-gray-500 uppercase">Etiqueta</Label>
                                     <Input
                                         value={sizeLabel}
@@ -401,31 +399,33 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
                                         className="bg-white border-gray-200"
                                     />
                                 </div>
-                                <div className="w-32 space-y-2">
-                                    <Label className="text-xs font-semibold text-gray-500 uppercase">Precio</Label>
-                                    <Input
-                                        type="number"
-                                        min="0"
-                                        step="0.01"
-                                        value={sizePrice}
-                                        onKeyDown={preventInvalidKeys}
-                                        onInput={enforcePriceRules}
-                                        onChange={(e) => setSizePrice(e.target.value)}
-                                        placeholder="0.00"
-                                        className="bg-white border-gray-200"
-                                    />
+                                <div className="flex gap-2 w-full">
+                                    <div className="flex-1 space-y-2">
+                                        <Label className="text-xs font-semibold text-gray-500 uppercase">Precio</Label>
+                                        <Input
+                                            type="number"
+                                            min="0"
+                                            step="0.01"
+                                            value={sizePrice}
+                                            onKeyDown={preventInvalidKeys}
+                                            onInput={enforcePriceRules}
+                                            onChange={(e) => setSizePrice(e.target.value)}
+                                            placeholder="0.00"
+                                            className="bg-white border-gray-200"
+                                        />
+                                    </div>
+                                    <Button type="button" onClick={addSize} className="bg-[#402E24] hover:bg-[#2b1f18] text-white self-end mb-0.5">
+                                        <Plus className="w-5 h-5" />
+                                    </Button>
                                 </div>
-                                <Button type="button" onClick={addSize} className="bg-[#402E24] hover:bg-[#2b1f18] text-white">
-                                    <Plus className="w-5 h-5" />
-                                </Button>
                             </div>
 
                             {formData.sizes && formData.sizes.length > 0 && (
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            <div className="grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
                                 {formData.sizes.map((size, idx) => (
-                                <div key={idx} className="flex justify-between items-center px-4 py-3 rounded-lg bg-white border border-gray-100 shadow-sm relative group">
-                                    <div>
-                                        <div className="font-bold text-gray-800">{size.label}</div>
+                                <div key={idx} className="flex justify-between items-center px-3 py-2 rounded-lg bg-white border border-gray-100 shadow-sm relative group w-full min-w-0">
+                                    <div className="min-w-0 pr-6">
+                                        <div className="font-bold text-gray-800 truncate" title={size.label}>{size.label}</div>
                                         <div className="text-sm text-[#A67C52]">${size.price}</div>
                                     </div>
                                     <Button
@@ -433,7 +433,7 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
                                     variant="ghost"
                                     size="sm"
                                     onClick={() => removeSize(idx)}
-                                    className="text-gray-400 hover:text-red-500 hover:bg-red-50 absolute top-2 right-2 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    className="text-gray-400 hover:text-red-500 hover:bg-red-50 absolute right-1 h-6 w-6 p-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                                     >
                                     <X className="w-4 h-4" />
                                     </Button>
@@ -456,41 +456,55 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
                                     {/* Extras */}
                                 <div className="space-y-3">
                                     <Label className="text-gray-700 font-medium">Extras Disponibles</Label>
-                                    <div className="flex gap-2">
+                                    <p className="text-[10px] text-gray-400">Ingrediente/ Precio adicional al precio base/ Permitir cantidad personalizada </p>
+                                    <div className="flex flex-wrap sm:flex-nowrap gap-2 items-center">
                                         <Input
                                             value={extraName}
                                             onChange={(e) => setExtraName(e.target.value)}
                                             placeholder="Nombre"
-                                            className="flex-1 bg-gray-50 border-gray-200"
+                                            className="flex-1 min-w-[120px] bg-gray-50 border-gray-200"
                                         />
-                                        <Input
-                                            type="number"
-                                            min="0"
-                                            step="0.01"
-                                            value={extraPrice}
-                                            onKeyDown={preventInvalidKeys}
-                                            onInput={enforcePriceRules}
-                                            onChange={(e) => setExtraPrice(e.target.value)}
-                                            placeholder="$"
-                                            className="w-20 bg-gray-50 border-gray-200"
-                                        />
-                                        <div className="flex items-center gap-1.5 px-1">
-                                            <Switch
-                                                checked={extraAllowQuantity}
-                                                onCheckedChange={setExtraAllowQuantity}
-                                                className="data-[state=checked]:bg-[#402E24] scale-90"
+                                        <div className="flex gap-2 w-full sm:w-auto items-center">
+                                            <Input
+                                                type="number"
+                                                min="0"
+                                                step="0.01"
+                                                value={extraPrice}
+                                                onKeyDown={preventInvalidKeys}
+                                                onInput={enforcePriceRules}
+                                                onChange={(e) => setExtraPrice(e.target.value)}
+                                                placeholder="$"
+                                                className="w-20 bg-gray-50 border-gray-200"
                                             />
-                                            <Label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider leading-none">Múltiple</Label>
+                                            <div className="flex items-center gap-1 px-1 flex-1">
+                                                <Switch
+                                                    checked={extraAllowQuantity}
+                                                    onCheckedChange={setExtraAllowQuantity}
+                                                    className="data-[state=checked]:bg-[#402E24] scale-90"
+                                                />
+                                                <Label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider leading-none">Múltiple</Label>
+                                            </div>
+                                            <Button type="button" onClick={addExtra} size="icon" className="bg-[#402E24] hover:bg-[#2b1f18] text-white shrink-0">
+                                                <Plus className="w-4 h-4" />
+                                            </Button>
                                         </div>
-                                        <Button type="button" onClick={addExtra} size="icon" className="bg-gray-200 hover:bg-gray-300 text-gray-700 shrink-0">
-                                            <Plus className="w-4 h-4" />
-                                        </Button>
                                     </div>
                                     <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
                                         {formData.extras?.map((extra, idx) => (
-                                            <div key={idx} className="flex justify-between items-center px-3 py-2 rounded bg-gray-50 text-sm">
-                                                <span>{extra.name} (+${extra.price}) {extra.allowQuantity && <span className="text-[10px] font-bold text-[#A67C52] ml-1 uppercase">(xN)</span>}</span>
-                                                <X className="w-3.5 h-3.5 text-gray-400 cursor-pointer hover:text-red-500" onClick={() => removeExtra(idx)} />
+                                            <div key={idx} className="flex justify-between items-center px-3 py-2 rounded bg-gray-50 text-sm gap-2 min-w-0">
+                                                <span className="truncate flex-1" title={`${extra.name} (+$${extra.price})`}>
+                                                    {extra.name} (+${extra.price}) 
+                                                    {extra.allowQuantity && <span className="text-[10px] font-bold text-[#A67C52] ml-1 uppercase whitespace-nowrap">(xN)</span>}
+                                                </span>
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => removeExtra(idx)}
+                                                    className="text-gray-400 hover:text-red-500 hover:bg-red-50 h-6 w-6 p-0 shrink-0"
+                                                >
+                                                    <X className="w-3.5 h-3.5" />
+                                                </Button>
                                             </div>
                                         ))}
                                     </div>
@@ -499,33 +513,46 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
                                     {/* Sabores */}
                                 <div className="space-y-3 flex flex-col">
                                     <Label className="text-gray-700 font-medium">Sabores</Label>
-                                    <div className="flex gap-2">
+                                    <p className="text-[10px] text-gray-400">Si el sabor no tiene precio diferente, dejar vacío y se tomara el precio base</p>
+                                    <div className="flex flex-wrap sm:flex-nowrap gap-2 items-center">
                                         <Input
                                             value={flavorName}
                                             onChange={(e) => setFlavorName(e.target.value)}
                                             placeholder="Sabor"
-                                            className="flex-1 bg-gray-50 border-gray-200"
+                                            className="flex-1 min-w-[120px] bg-gray-50 border-gray-200"
                                         />
-                                        <Input
-                                            type="number"
-                                            min="0"
-                                            step="0.01"
-                                            value={flavorPrice}
-                                            onKeyDown={preventInvalidKeys}
-                                            onInput={enforcePriceRules}
-                                            onChange={(e) => setFlavorPrice(e.target.value)}
-                                            placeholder="$"
-                                            className="w-20 bg-gray-50 border-gray-200"
-                                        />
-                                        <Button type="button" onClick={addFlavor} size="icon" className="bg-gray-200 hover:bg-gray-300 text-gray-700 shrink-0">
-                                            <Plus className="w-4 h-4" />
-                                        </Button>
+                                        <div className="flex gap-2 w-full sm:w-auto items-center">
+                                            <Input
+                                                type="number"
+                                                min="0"
+                                                step="0.01"
+                                                value={flavorPrice}
+                                                onKeyDown={preventInvalidKeys}
+                                                onInput={enforcePriceRules}
+                                                onChange={(e) => setFlavorPrice(e.target.value)}
+                                                placeholder="$"
+                                                className="flex-1 sm:w-20 bg-gray-50 border-gray-200"
+                                            />
+                                            <Button type="button" onClick={addFlavor} size="icon" className="bg-[#402E24] hover:bg-[#2b1f18] text-white shrink-0">
+                                                <Plus className="w-4 h-4" />
+                                            </Button>
+                                        </div>
                                     </div>
                                     <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
                                         {formData.flavors?.map((flavor, idx) => (
-                                            <div key={idx} className="flex justify-between items-center px-3 py-2 rounded bg-gray-50 text-sm">
-                                                <span>{flavor.name} {flavor.price > 0 && `(+$${flavor.price})`}</span>
-                                                <X className="w-3.5 h-3.5 text-gray-400 cursor-pointer hover:text-red-500" onClick={() => removeFlavor(idx)} />
+                                            <div key={idx} className="flex justify-between items-center px-3 py-2 rounded bg-gray-50 text-sm gap-2 min-w-0">
+                                                <span className="truncate flex-1" title={`${flavor.name} ${flavor.price > 0 ? `(+$${flavor.price})` : ''}`}>
+                                                    {flavor.name} {flavor.price > 0 && `(+$${flavor.price})`}
+                                                </span>
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => removeFlavor(idx)}
+                                                    className="text-gray-400 hover:text-red-500 hover:bg-red-50 h-6 w-6 p-0 shrink-0"
+                                                >
+                                                    <X className="w-3.5 h-3.5" />
+                                                </Button>
                                             </div>
                                         ))}
                                     </div>
@@ -572,11 +599,11 @@ export function ProductFormDialog({ open, onOpenChange, onSubmit, initialData })
               </div>
           </div>
 
-           <DialogFooter className="p-5 bg-white border-t border-gray-100 gap-3">
-             <Button variant="outline" onClick={() => onOpenChange(false)} className="border-gray-200 text-gray-600 hover:bg-gray-50">
+           <DialogFooter className="p-4 sm:p-5 bg-white border-t border-gray-100 gap-3">
+             <Button variant="outline" onClick={() => onOpenChange(false)} className="bg-white border-gray-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors">
                Cancelar
              </Button>
-             <Button type="submit" form="product-form" className="bg-[#402E24] hover:bg-[#2b1f18] text-white px-8 shadow-lg">
+             <Button type="submit" form="product-form" className="bg-[#402E24] hover:bg-[#2b1f18] text-white px-8 shadow-md hover:shadow-lg transition-all">
                {initialData?._id ? 'Guardar Cambios' : 'Crear Producto'}
              </Button>
            </DialogFooter>

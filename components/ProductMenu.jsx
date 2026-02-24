@@ -247,8 +247,8 @@ export function ProductMenu() {
         </div>
 
       {/* Tabs de categorías */}
-      <div className="bg-white px-6 py-3 shadow-sm shrink-0 items-center border-b border-gray-100 sticky top-16 z-10 flex justify-between gap-4">
-            <ScrollArea className="flex-1 whitespace-nowrap">
+      <div className="bg-white px-4 sm:px-6 py-3 shadow-sm items-center border-b border-gray-100 sticky top-16 z-10 flex justify-between gap-2 sm:gap-4 overflow-hidden w-full">
+            <ScrollArea className="flex-1 whitespace-nowrap overflow-hidden max-w-full">
                 <div className="flex w-max space-x-2 p-1">
                     {categories.map(category => (
                         <Button
