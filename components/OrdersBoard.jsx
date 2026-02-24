@@ -29,31 +29,31 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 const COLUMN_CONFIG = {
   pending: {
     title: 'Nuevas',
-    color: 'bg-yellow-100',
-    borderColor: 'border-yellow-400',
+    color: 'bg-[#F0E0CD]', // Cream/Light Tan
+    borderColor: 'border-[#A67C52]',
     icon: Clock,
-    textColor: 'text-yellow-800'
+    textColor: 'text-[#402E24]' // Dark Brown
   },
   preparing: {
     title: 'En Preparación',
-    color: 'bg-blue-100',
-    borderColor: 'border-blue-400',
+    color: 'bg-[#E3CBA8]', // Warmer Light Tan
+    borderColor: 'border-[#A67C52]',
     icon: ChefHat,
-    textColor: 'text-blue-800'
+    textColor: 'text-[#402E24]'
   },
   ready: {
     title: 'Listas',
-    color: 'bg-green-100',
-    borderColor: 'border-green-400',
+    color: 'bg-[#D2B690]', // Medium warm tan/gold
+    borderColor: 'border-[#8A623A]',
     icon: Check,
-    textColor: 'text-green-800'
+    textColor: 'text-[#2b1f18]' // Deeper Brown
   },
   completed: {
     title: 'Entregadas',
-    color: 'bg-gray-100',
-    borderColor: 'border-gray-300',
+    color: 'bg-[#FAFAFA]', // Off-white/Grayish
+    borderColor: 'border-gray-200',
     icon: Package,
-    textColor: 'text-gray-600'
+    textColor: 'text-[#756046]' // Muted brown
   }
 };
 
@@ -250,22 +250,21 @@ export function OrdersBoard() {
   return (
     <div className="h-screen flex flex-col bg-[#F5F5F5] overflow-hidden font-sans">
         {/* Header Consistente */}
-        <div className="h-16 bg-[#402E24] shadow-md flex items-center px-4 md:px-6 justify-between shrink-0 z-10 w-full overflow-x-auto no-scrollbar">
-            <div className="flex items-center gap-2 md:gap-4 shrink-0">
+        <div className="bg-[#402E24] shadow-md flex items-center px-4 py-4 sm:h-16 justify-between shrink-0 z-10 w-full">
+            <div className="flex items-center gap-3 w-full min-w-0">
                 <Button 
                     variant="ghost" 
                     size="icon" 
                     onClick={() => router.push('/menu')}
-                    className="text-[#F5F5F5] hover:bg-white/10 hover:text-white transition-colors"
+                    className="text-[#F5F5F5] hover:bg-white/10 hover:text-white transition-colors shrink-0"
                 >
                     <ArrowLeft />
                 </Button>
-                <div className="hidden sm:block whitespace-nowrap">
-                     <h1 className="text-xl font-bold text-white tracking-wide">Panel de Órdenes</h1>
-                     <p className="text-xs text-gray-300">Gestión de cocina en tiempo real</p>
+                <div className="min-w-0">
+                     <h1 className="text-lg sm:text-xl font-bold text-white tracking-wide truncate">Panel de Órdenes</h1>
+                     <p className="text-xs text-gray-300 truncate">Gestión de cocina en tiempo real</p>
                 </div>
             </div>
-
         </div>
 
         {/* Desktop View: Grid */}
@@ -277,9 +276,9 @@ export function OrdersBoard() {
 
                 return (
                     <div key={status} className="flex flex-col h-full bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div className={`p-4 border-b border-gray-100 flex items-center justify-between shrink-0 ${status === 'pending' ? 'bg-yellow-50' : status === 'preparing' ? 'bg-blue-50' : status === 'ready' ? 'bg-green-50' : 'bg-gray-50'}`}>
+                        <div className={`p-4 border-b border-gray-100 flex items-center justify-between shrink-0 ${config.color}`}>
                             <div className="flex items-center gap-3">
-                                <div className={`p-2 rounded-lg ${config.color.replace('bg-', 'bg-').replace('100', '200')}`}>
+                                <div className={`p-2 rounded-lg bg-white/50 backdrop-blur-sm`}>
                                     <Icon size={20} className={config.textColor} />
                                 </div>
                                 <h2 className={`font-bold text-lg ${config.textColor}`}>
@@ -316,9 +315,9 @@ export function OrdersBoard() {
         </div>
 
         {/* Mobile View: Tabs */}
-        <div className="flex lg:hidden flex-1 min-h-0 p-4">
+        <div className="flex lg:hidden flex-1 min-h-0 p-3 sm:p-4">
             <Tabs defaultValue="pending" className="flex flex-col flex-1 w-full h-full min-h-0">
-                <TabsList className="w-full bg-gray-100 border border-gray-200 p-1.5 mb-4 h-auto flex shadow-inner rounded-xl">
+                <TabsList className="w-full bg-gray-100 border border-gray-200 p-1 mb-4 h-auto flex gap-1 sm:gap-2 shadow-inner rounded-xl overflow-x-auto no-scrollbar justify-start items-center">
                     {Object.keys(COLUMN_CONFIG).map(status => {
                         const config = COLUMN_CONFIG[status];
                         const Icon = config.icon;
@@ -327,17 +326,17 @@ export function OrdersBoard() {
                             <TabsTrigger 
                                 key={status} 
                                 value={status}
-                                className="flex-1 min-w-0 py-2.5 px-0.5 flex flex-col items-center gap-1 rounded-lg transition-all duration-300 data-[state=active]:bg-[#402E24] data-[state=active]:shadow-md data-[state=active]:text-white text-gray-500 hover:text-gray-700"
+                                className="shrink-0 py-2 px-2 sm:px-3 flex flex-col items-center gap-1 rounded-lg transition-all duration-300 data-[state=active]:bg-[#402E24] data-[state=active]:shadow-md data-[state=active]:text-white text-gray-500 hover:text-gray-700"
                             >
-                                <div className="flex items-center gap-1.5 min-w-0">
-                                  <Icon size={16} className="shrink-0" />
-                                  <span className="truncate text-[9px] sm:text-[11px] font-bold uppercase tracking-wider">{config.title}</span>
+                                <div className="flex items-center gap-1.5 relative">
+                                  <Icon size={14} className="shrink-0" />
+                                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">{config.title}</span>
+                                  {matchCount > 0 && (
+                                      <span className="ml-1 bg-[#F0E0CD] text-[#402E24] px-1.5 py-0.5 rounded-full text-[9px] font-bold shadow-sm">
+                                          {matchCount}
+                                      </span>
+                                  )}
                                 </div>
-                                {matchCount > 0 && (
-                                    <span className="bg-[#F0E0CD] text-[#402E24] px-2 py-0.5 rounded-full text-[10px] font-bold shadow-sm">
-                                        {matchCount}
-                                    </span>
-                                )}
                             </TabsTrigger>
                         );
                     })}
@@ -348,7 +347,7 @@ export function OrdersBoard() {
                     const columnOrders = columns[status] || [];
                     return (
                         <TabsContent key={status} value={status} className="flex-1 min-h-0 m-0 outline-none flex flex-col h-full bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                            <div className={`p-3 border-b border-gray-100 shrink-0 ${status === 'pending' ? 'bg-yellow-50' : status === 'preparing' ? 'bg-blue-50' : status === 'ready' ? 'bg-green-50' : 'bg-gray-50'}`}>
+                            <div className={`p-3 border-b border-gray-100 shrink-0 ${config.color}`}>
                                 <h3 className={`font-bold text-center ${config.textColor}`}>
                                     {config.title} ({columnOrders.length})
                                 </h3>
@@ -686,15 +685,12 @@ function OrderCard({ order, status, onUpdateStatus, onDelete, onEdit }) {
     // Determine card styling based on status
     const isNew = status === 'pending';
     const isPreparing = status === 'preparing';
+    const config = COLUMN_CONFIG[status];
     
     return (
-        <Card className={`group relative transition-all duration-300 border-none shadow-sm hover:shadow-md overflow-hidden ${isNew ? 'ring-2 ring-yellow-400/50' : ''}`}>
+        <Card className={`group relative transition-all duration-300 border-none shadow-sm hover:shadow-md overflow-hidden ${isNew ? `ring-2 ${config.borderColor}` : ''}`}>
              {/* Status indicator strip */}
-             <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${
-                 status === 'pending' ? 'bg-yellow-400' : 
-                 status === 'preparing' ? 'bg-blue-400' : 
-                 status === 'ready' ? 'bg-green-500' : 'bg-gray-300'
-             }`}></div>
+             <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${config.color.replace('bg-', 'bg-').replace('100', '300')}`}></div>
 
             <CardHeader>
                 <div className="flex justify-between items-start">
@@ -804,7 +800,7 @@ function OrderCard({ order, status, onUpdateStatus, onDelete, onEdit }) {
                 <div className="grid gap-2">
                     {status === 'pending' && (
                         <Button 
-                            className="w-full h-9 bg-blue-600 hover:bg-blue-700 text-white shadow-sm font-medium transition-all active:scale-95" 
+                            className="w-full h-9 bg-[#A67C52] hover:bg-[#8A623A] text-white shadow-sm font-medium transition-all active:scale-95" 
                             onClick={(e) => { e.stopPropagation(); onUpdateStatus(order._id, 'preparing'); }}
                         >
                             Comenzar Preparación
@@ -812,7 +808,7 @@ function OrderCard({ order, status, onUpdateStatus, onDelete, onEdit }) {
                     )}
                     {status === 'preparing' && (
                         <Button 
-                            className="w-full h-9 bg-green-600 hover:bg-green-700 text-white shadow-sm font-medium transition-all active:scale-95 animate-pulse hover:animate-none" 
+                            className="w-full h-9 bg-[#8A623A] hover:bg-[#6A4725] text-white shadow-sm font-medium transition-all active:scale-95 animate-pulse hover:animate-none" 
                             onClick={(e) => { e.stopPropagation(); onUpdateStatus(order._id, 'ready'); }}
                         >
                             Marcar como Listo
