@@ -86,14 +86,14 @@ export function OrderMenu({
   return (
     <div className="flex flex-col h-full border-r border-[#E5E5E5]">
         {/* Header */}
-        <div className="h-16 bg-[#402E24] shadow-md flex items-center px-4 justify-between shrink-0 z-10">
-            <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" onClick={() => router.push('/menu')} className="text-[#F5F5F5] hover:bg-white/10 hover:text-white">
+        <div className="bg-[#402E24] shadow-md flex flex-col sm:flex-row items-start sm:items-center px-4 py-4 sm:h-16 justify-between gap-4 shrink-0 z-10 w-full">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+                <Button variant="ghost" size="icon" onClick={() => router.push('/menu')} className="text-[#F5F5F5] hover:bg-white/10 hover:text-white shrink-0">
                     <ArrowLeft />
                 </Button>
-                <h1 className="text-xl font-bold text-white tracking-wide">Nueva Orden</h1>
+                <h1 className="text-xl font-bold text-white tracking-wide truncate pr-4">Nueva Orden</h1>
             </div>
-            <div className="w-1/3 relative">
+            <div className="w-full sm:w-1/3 md:w-[400px] relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input 
                     value={searchTerm}
